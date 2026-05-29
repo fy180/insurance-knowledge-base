@@ -585,7 +585,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft
   </div>
 
   <!-- Hidden file input for uploading documents to generate notes -->
-  <input type="file" id="noteUploadInput" accept=".txt,.md,.json,.csv,.html,.xml" onchange="handleNoteFileUpload(event)">
+  <input type="file" id="noteUploadInput" accept=".txt,.md,.json,.csv,.html,.xml,.docx,.xlsx,.pdf" onchange="handleNoteFileUpload(event)">
 
 </div>
 
@@ -1002,9 +1002,9 @@ async function handleNoteFileUpload(event) {
 
   event.target.value = '';
 
-  const maxSize = 5 * 1024 * 1024;
+  const maxSize = 10 * 1024 * 1024;
   if (file.size > maxSize) {
-    alert('文件过大，请选择 5MB 以内的文件');
+    alert('文件过大，请选择 10MB 以内的文件');
     return;
   }
 
@@ -1096,14 +1096,106 @@ ${fileContent.substring(0, 15000)}`;
   }
 }
 
+// ==================== Dynamic Script Loader ====================
+var loadedScripts = {};
+function loadScript(src) {
+  return new Promise(function(resolve, reject) {
+    if (loadedScripts[src]) { resolve(); return; }
+    var script = document.createElement('script');
+    script.src = src;
+    script.onload = function() { loadedScripts[src] = true; resolve(); };
+    script.onerror = function() { reject(new Error('加载库失败: ' + src)); };
+    document.head.appendChild(script);
+  });
+}
+
+// ==================== Multi-format File Reader ====================
 function readFileContent(file) {
+  var ext = file.name.split('.').pop().toLowerCase();
+
+  // Text-based formats — read directly
+  if (['txt', 'md', 'json', 'csv', 'html', 'xml'].indexOf(ext) !== -1) {
+    return new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function() { resolve(reader.result); };
+      reader.onerror = function() { reject(new Error('文件读取失败')); };
+      reader.readAsText(file, 'UTF-8');
+    });
+  }
+
+  // Read as ArrayBuffer for binary formats
+  var arrayBufferPromise = new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() { resolve(reader.result); };
+    reader.onerror = function() { reject(new Error('文件读取失败')); };
+    reader.readAsArrayBuffer(file);
+  });
+
+  if (ext === 'docx') return readDocxFile(arrayBufferPromise, file);
+  if (ext === 'xlsx') return readXlsxFile(arrayBufferPromise, file);
+  if (ext === 'pdf') return readPdfFile(arrayBufferPromise, file);
+
+  // Fallback: try reading as text
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
     reader.onload = function() { resolve(reader.result); };
     reader.onerror = function() { reject(new Error('文件读取失败')); };
-    // Read as text — works for .txt, .md, .json, .csv, .html, .xml
     reader.readAsText(file, 'UTF-8');
   });
+}
+
+async function readDocxFile(arrayBufferPromise, file) {
+  logThinking('📦 加载 Word 解析库 (mammoth.js)...', 'info');
+  await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+  logThinking('🔍 解析 .docx 文件...', 'step');
+  var arrayBuffer = await arrayBufferPromise;
+  var result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+  var text = result.value.trim();
+  if (!text) throw new Error('Word 文件中未提取到文字内容（可能为扫描件或图片型文档）');
+  if (result.messages && result.messages.length) {
+    logThinking('⚠ 解析警告: ' + result.messages.join('; '), 'info');
+  }
+  logThinking('✅ Word 解析完成，提取 ' + text.length + ' 字符', 'step');
+  return text;
+}
+
+async function readXlsxFile(arrayBufferPromise, file) {
+  logThinking('📦 加载 Excel 解析库 (SheetJS)...', 'info');
+  await loadScript('https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js');
+  logThinking('🔍 解析 .xlsx 文件...', 'step');
+  var arrayBuffer = await arrayBufferPromise;
+  var workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+  var text = '';
+  workbook.SheetNames.forEach(function(sheetName, idx) {
+    if (idx > 0) text += '\n\n';
+    text += '=== ' + sheetName + ' ===\n';
+    var sheet = workbook.Sheets[sheetName];
+    text += XLSX.utils.sheet_to_csv(sheet);
+  });
+  if (!text.trim()) throw new Error('Excel 文件中未提取到数据');
+  logThinking('✅ Excel 解析完成，共 ' + workbook.SheetNames.length + ' 个工作表，' + text.length + ' 字符', 'step');
+  return text;
+}
+
+async function readPdfFile(arrayBufferPromise, file) {
+  logThinking('📦 加载 PDF 解析库 (PDF.js)...', 'info');
+  await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  logThinking('🔍 解析 .pdf 文件...', 'step');
+  var arrayBuffer = await arrayBufferPromise;
+  var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  logThinking('📄 PDF 共 ' + pdf.numPages + ' 页，逐页提取文字...', 'step');
+  var pagesText = [];
+  for (var i = 1; i <= pdf.numPages; i++) {
+    var page = await pdf.getPage(i);
+    var content = await page.getTextContent();
+    var pageText = content.items.map(function(item) { return item.str; }).join(' ');
+    if (pageText.trim()) pagesText.push('--- 第 ' + i + ' 页 ---\n' + pageText);
+  }
+  var text = pagesText.join('\n\n');
+  if (!text.trim()) throw new Error('PDF 中未提取到文字内容（可能为扫描件或图片型 PDF）');
+  logThinking('✅ PDF 解析完成，提取 ' + text.length + ' 字符', 'step');
+  return text;
 }
 
 function resetUploadButton() {
