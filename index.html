@@ -1219,25 +1219,80 @@ function saveToNotebook(btn) {
 }
 
 // ==================== PAGE EDIT (AI self-modify) ====================
-const PAGE_EDIT_PROMPT = `你是一个网页代码生成器。用户会描述他们想要的页面修改。
+const PAGE_EDIT_PROMPT = `你是一个网页代码生成器，可以修改当前运行的网页。用户会描述页面修改需求。
 
-你必须只返回一段合法的 JavaScript 代码，用 document.querySelector 等 DOM API 修改当前页面。代码会被直接 eval 执行。
+你必须只返回一段 JavaScript 代码，放入 (function(){ ... })() 中执行。代码会被 eval 执行。
 
-规则：
-- 只返回可执行的 JavaScript 代码
-- 用 document.querySelector 或 document.getElementById 查找元素
-- 修改样式用 element.style.xxx = 'value'
-- 添加内容用 element.innerHTML 或 insertAdjacentHTML
-- 所有修改放在一个立即执行函数中：(function() { ... })();
-- 不要用 markdown 代码块，只返回纯代码
-- 不要加任何解释文字
+## 当前页面 DOM 结构
 
-示例请求：「把侧边栏背景改成深绿色」
-示例回复：
+- 侧边栏: .sidebar (深色背景 #1e1e2f, 宽260px)
+  - 菜单项: .nav-item (带 data-page 属性: filetypes/products/principles/clauses/coverages/aichat/notebook)
+  - 菜单分类标题: .nav-section-title
+  - AI工具区的分隔在 .nav-section 内
+- 主内容区: .main
+  - 页面: .page (id: page-filetypes/page-products/page-principles/page-clauses/page-coverages/page-aichat/page-notebook)
+- 卡片: .card (用于文件类型和保险责任)
+- 知识块: .knowledge-block
+- 弹窗: .overlay / .modal / #modalTitle / #modalBody
+- 按钮: .btn / .btn-primary (紫色) / .btn-secondary (白底紫字)
+
+## 常见修改示例
+
+1. 「把侧边栏改成深蓝色」
 (function() {
   var el = document.querySelector('.sidebar');
-  if (el) el.style.background = '#1a3a2a';
-})();`;
+  if (el) el.style.background = '#1a2744';
+})();
+
+2. 「添加一个菜单项」
+(function() {
+  var nav = document.querySelector('.sidebar-nav');
+  var newItem = document.createElement('div');
+  newItem.className = 'nav-item';
+  newItem.setAttribute('data-page', 'custom');
+  newItem.innerHTML = '<span class="nav-icon">⭐</span>我的收藏';
+  nav.appendChild(newItem);
+})();
+
+3. 「把菜单文字改成白色」
+(function() {
+  document.querySelectorAll('.nav-item').forEach(function(el) {
+    el.style.color = '#fff';
+  });
+})();
+
+4. 「修改页面标题」
+(function() {
+  var h1 = document.querySelector('#page-filetypes .page-header h1');
+  if (h1) h1.textContent = '新的标题';
+})();
+
+5. 「把按钮改成圆角」
+(function() {
+  document.querySelectorAll('.btn').forEach(function(el) {
+    el.style.borderRadius = '20px';
+  });
+})();
+
+6. 「修改菜单项的文字」
+(function() {
+  document.querySelectorAll('.nav-item').forEach(function(el) {
+    if (el.textContent.includes('文件类型')) el.innerHTML = '<span class="nav-icon">📋</span>文档说明';
+  });
+})();
+
+7. 「修改整个页面的字体」
+(function() {
+  document.body.style.fontFamily = '"PingFang SC", "Microsoft YaHei", sans-serif';
+})();
+
+## 规则
+- 只返回 JavaScript，不要用 markdown 代码块，不加任何解释
+- 用立即执行函数包裹: (function() { ... })();
+- 用 var 声明变量（兼容性）
+- 修改后添加 console.log('done') 确认执行
+- 不要使用 const/let（兼容旧浏览器）
+- 如果找不到元素，静默失败`;
 
 const PAGE_EDITS_KEY = 'page_customizations';
 let pageEdits = [];
