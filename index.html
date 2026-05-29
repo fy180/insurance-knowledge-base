@@ -449,7 +449,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft
         <div class="config-hint" id="configHint"></div>
         <div class="config-row" style="margin-top:8px">
           <select id="agentSelect" style="flex:1"><option value="default">保险专家（默认）</option></select>
-          <button class="btn btn-secondary" id="manageAgentsBtn" style="white-space:nowrap">Agent 管理</button>
+          <button class="btn btn-secondary" id="manageAgentsBtn" style="white-space:nowrap">管理</button>
+          <button class="btn btn-secondary" id="exportAgentsBtn" style="white-space:nowrap;font-size:11px;padding:8px 10px">导出</button>
+          <button class="btn btn-secondary" id="importAgentsBtn" style="white-space:nowrap;font-size:11px;padding:8px 10px">导入</button>
+        </div>
+        <div class="config-row" style="margin-top:6px">
+          <label style="font-size:11px;color:#888;display:flex;align-items:center;gap:6px;cursor:pointer">
+            <input type="checkbox" id="toolModeToggle"> 启用工具调用 (搜索知识库 / 计算 / 时间)
+          </label>
         </div>
       </div>
       <!-- Chat Messages -->
@@ -1040,24 +1047,55 @@ async function sendMessage() {
 
   try {
     const provider = document.getElementById('aiProvider').value;
-    let response;
-
-    if (provider === 'anthropic') {
-      response = await callAnthropicChat(apiKey);
-    } else if (provider === 'dashscope') {
-      response = await callDashScopeChat(apiKey);
-    } else {
-      response = await callOpenAIChat(apiKey);
+    var toolMode = document.getElementById('toolModeToggle').checked;
+    var systemPrompt = getCurrentAgent().systemPrompt + (toolMode ? buildToolPrompt() : '');
+    var messages = [];
+    var history = chatMessages.filter(function(m) { return !m.loading && !m.error; }).slice(-20);
+    for (var i = 0; i < history.length; i++) {
+      messages.push({ role: history[i].role, content: history[i].content });
     }
 
-    // Replace loading message with real response
+    // Tool call loop
+    for (var loop = 0; loop < 5; loop++) {
+      var response = await callAIWithProvider(provider, apiKey, messages, systemPrompt);
+
+      // Check for tool call
+      var toolMatch = response.match(/<tool_call>\s*(\{[\s\S]*?\})\s*<\/tool_call>/);
+      if (!toolMatch) {
+        // No tool call - final response
+        chatMessages.pop();
+        chatMessages.push({ role: 'assistant', content: response });
+        saveChatHistory();
+        renderChatMessages();
+        scrollToBottom();
+        logThinking('AI 回复完成 (' + response.length + ' 字)', 'done');
+        logThinking('对话历史已保存到本地', 'info');
+        return;
+      }
+
+      // Execute tool
+      var toolReq = JSON.parse(toolMatch[1]);
+      logThinking('调用工具：' + toolReq.name, 'step');
+      logThinking('参数：' + JSON.stringify(toolReq.args || {}), 'code');
+      var toolResult = '';
+      if (TOOLS[toolReq.name]) {
+        toolResult = TOOLS[toolReq.name].execute(toolReq.args || {});
+        logThinking('工具返回：' + toolResult.substring(0, 200), 'info');
+      } else {
+        toolResult = '未知工具：' + toolReq.name;
+        logThinking('未知工具：' + toolReq.name, 'error');
+      }
+
+      messages.push({ role: 'assistant', content: response });
+      messages.push({ role: 'user', content: '<tool_result>' + toolResult + '</tool_result>' });
+    }
+
+    // safety - use last response
     chatMessages.pop();
-    chatMessages.push({ role: 'assistant', content: response });
+    chatMessages.push({ role: 'assistant', content: response || '处理超时' });
     saveChatHistory();
     renderChatMessages();
     scrollToBottom();
-    logThinking('AI 回复完成 (' + response.length + ' 字)', 'done');
-    logThinking('对话历史已保存到本地', 'info');
   } catch (err) {
     chatMessages.pop();
     chatMessages.push({ role: 'assistant', content: '抱歉，请求失败：' + err.message, error: true });
@@ -1067,6 +1105,37 @@ async function sendMessage() {
   }
 
   updateSendButton();
+}
+
+async function callAIWithProvider(provider, apiKey, messages, systemPrompt) {
+  logThinking('调用 ' + provider + ' (' + messages.length + ' 条消息)', 'info');
+  if (provider === 'anthropic') {
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2048, system: systemPrompt, messages: messages })
+    });
+    if (!res.ok) { var e = await res.json().catch(function(){return{};}); throw new Error('Anthropic: '+res.status+' '+e.error.message); }
+    var data = await res.json();
+    return data.content[0].text;
+  }
+
+  var baseUrl = provider === 'dashscope' ? 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions';
+  var model = provider === 'dashscope' ? 'qwen-plus' : 'gpt-4o';
+
+  var apiMessages = [{ role: 'system', content: systemPrompt }];
+  for (var i = 0; i < messages.length; i++) {
+    apiMessages.push({ role: messages[i].role, content: messages[i].content });
+  }
+
+  var res = await fetch(baseUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({ model: model, max_tokens: 2048, messages: apiMessages })
+  });
+  if (!res.ok) { var e = await res.json().catch(function(){return{};}); throw new Error(provider+': '+res.status+' '+e.message); }
+  var data = await res.json();
+  return data.choices[0].message.content;
 }
 
 async function callAnthropicChat(apiKey) {
@@ -1252,6 +1321,115 @@ function saveToNotebook(btn) {
     btn.style.color = '';
     btn.style.borderColor = '';
   }, 1500);
+}
+
+// ==================== AGENT IMPORT/EXPORT ====================
+function exportAgents() {
+  var agents = getAgents();
+  var exportData = agents.map(function(a) {
+    return { name: a.name, icon: a.icon, systemPrompt: a.systemPrompt };
+  });
+  var blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'insurance-agents.json'; a.click();
+  URL.revokeObjectURL(url);
+  logThinking('导出了 ' + exportData.length + ' 个 Agent', 'done');
+}
+
+document.getElementById('exportAgentsBtn').addEventListener('click', exportAgents);
+
+document.getElementById('importAgentsBtn').addEventListener('click', function() {
+  var input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        var imported = JSON.parse(ev.target.result);
+        if (!Array.isArray(imported)) throw new Error('格式错误：需要JSON数组');
+        var agents = getAgents();
+        var added = 0;
+        imported.forEach(function(item) {
+          if (item.name && item.systemPrompt) {
+            agents.push({
+              id: Date.now().toString(36) + '_' + Math.random().toString(36).substr(2,4),
+              name: item.name,
+              icon: item.icon || '🤖',
+              systemPrompt: item.systemPrompt,
+              isDefault: false
+            });
+            added++;
+          }
+        });
+        saveAgents(agents);
+        renderAgentSelect();
+        logThinking('导入了 ' + added + ' 个 Agent', 'done');
+        alert('成功导入 ' + added + ' 个 Agent');
+      } catch(err) {
+        logThinking('导入失败：' + err.message, 'error');
+        alert('导入失败：' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+});
+
+// ==================== TOOL SYSTEM (MCP-lite) ====================
+var TOOLS = {
+  search_kb: {
+    name: 'search_kb',
+    description: '搜索保险知识库，查找保险产品类型、条款、原理等相关知识',
+    parameters: { query: '搜索关键词' },
+    execute: function(args) {
+      var query = (args.query || '').toLowerCase();
+      // Search through knowledge blocks on the page
+      var results = [];
+      document.querySelectorAll('.knowledge-block').forEach(function(block) {
+        var text = block.textContent.toLowerCase();
+        if (text.includes(query)) {
+          results.push(block.textContent.trim().substring(0, 500));
+        }
+      });
+      if (results.length === 0) {
+        return '知识库中未找到与「' + args.query + '」相关的内容。';
+      }
+      return '找到 ' + results.length + ' 条相关内容：\n\n' + results.slice(0, 3).join('\n---\n');
+    }
+  },
+  calculator: {
+    name: 'calculator',
+    description: '执行数学计算，支持加减乘除、百分比等运算',
+    parameters: { expression: '数学表达式，如 "100 * 1.05"' },
+    execute: function(args) {
+      try {
+        var result = eval(args.expression);
+        return args.expression + ' = ' + result;
+      } catch(e) {
+        return '计算错误：' + e.message;
+      }
+    }
+  },
+  get_time: {
+    name: 'get_time',
+    description: '获取当前日期和时间',
+    parameters: {},
+    execute: function() {
+      return '当前时间：' + new Date().toLocaleString('zh-CN');
+    }
+  }
+};
+
+function buildToolPrompt() {
+  if (!document.getElementById('toolModeToggle').checked) return '';
+  var toolDesc = Object.values(TOOLS).map(function(t) {
+    return '- ' + t.name + ': ' + t.description + ' (参数: ' + JSON.stringify(t.parameters) + ')';
+  }).join('\n');
+
+  return '\n\n你可以使用以下工具。如需调用工具，请严格按此格式回复：\n<tool_call>\n{"name": "工具名", "args": {...}}\n</tool_call>\n收到 <tool_result> 后继续回答。\n\n可用工具：\n' + toolDesc;
 }
 
 // ==================== THINKING LOG ====================
