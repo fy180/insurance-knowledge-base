@@ -118,7 +118,21 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft
 .note-empty { text-align: center; color: #aaa; padding: 40px; font-size: 14px; }
 
 /* ========== AI Chat ========== */
-.chat-container { display: flex; flex-direction: column; height: calc(100vh - 140px); max-width: 800px; }
+.chat-wrapper { display: flex; gap: 16px; height: calc(100vh - 140px); }
+.chat-container { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.think-panel { width: 280px; min-width: 280px; background: #1a1a2e; border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
+.think-panel-header { padding: 12px 16px; background: #16163a; color: #a78bfa; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.think-panel-header .dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf50; animation: pulse-dot 1.5s infinite; }
+@keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+.think-logs { flex: 1; overflow-y: auto; padding: 8px; }
+.think-log { padding: 8px 10px; margin-bottom: 4px; border-radius: 6px; font-size: 11px; line-height: 1.5; animation: fadeIn 0.25s ease; }
+.think-log.info { color: #b0b0c0; }
+.think-log.step { color: #ffd54f; background: rgba(255,213,79,0.06); border-left: 2px solid #ffd54f; }
+.think-log.code { color: #4fc3f7; background: rgba(79,195,247,0.06); border-left: 2px solid #4fc3f7; font-family: 'SF Mono', monospace; font-size: 10px; white-space: pre-wrap; }
+.think-log.done { color: #81c784; background: rgba(129,199,132,0.06); border-left: 2px solid #81c784; }
+.think-log.error { color: #ef5350; background: rgba(239,83,80,0.06); border-left: 2px solid #ef5350; }
+.think-log-time { font-size: 9px; color: #555; margin-right: 4px; }
+@media (max-width: 1000px) { .think-panel { display: none; } }
 .chat-config { background: #fff; border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); }
 .config-row { display: flex; gap: 10px; align-items: center; }
 .config-row select { padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; outline: none; background: #fff; }
@@ -419,6 +433,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft
       <h1>保险AI助手</h1>
       <p>基于大模型的保险知识问答，支持通义千问 / Claude / GPT</p>
     </div>
+    <div class="chat-wrapper">
     <div class="chat-container">
       <!-- API Config -->
       <div class="chat-config" id="chatConfig">
@@ -457,6 +472,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft
         <button class="btn btn-secondary" id="clearChatBtn">清空对话</button>
         <button class="btn btn-secondary" id="resetPageBtn" style="display:none">恢复默认</button>
       </div>
+    </div>
+    <!-- Think Panel -->
+    <div class="think-panel" id="thinkPanel">
+      <div class="think-panel-header"><span class="dot"></span>思考过程</div>
+      <div class="think-logs" id="thinkLogs">
+        <div class="think-log info">等待你的输入...</div>
+      </div>
+    </div>
     </div>
   </div>
 
@@ -976,6 +999,8 @@ async function sendMessage() {
 
   // Auto-route page edit requests
   if (isPageEditRequest(text)) {
+    logThinking('识别意图：页面编辑请求', 'step');
+    logThinking('请求内容：' + text.substring(0, 80), 'info');
     input.value = '';
     input.style.height = 'auto';
     editPage(text);
@@ -989,6 +1014,14 @@ async function sendMessage() {
     hint.className = 'config-hint error';
     return;
   }
+
+  logThinking('识别意图：保险知识问答', 'step');
+  logThinking('提问：' + text.substring(0, 80), 'info');
+  var provider = document.getElementById('aiProvider').value;
+  var providerName = {dashscope:'通义千问',anthropic:'Claude',openai:'GPT-4o'}[provider] || provider;
+  logThinking('调用模型：' + providerName + ' (' + provider + ')', 'info');
+  logThinking('当前Agent：' + (getCurrentAgent().name), 'info');
+  logThinking('上下文消息数：' + (chatMessages.filter(function(m){return !m.loading&&!m.error}).length), 'info');
 
   // Add user message
   chatMessages.push({ role: 'user', content: text });
@@ -1023,11 +1056,14 @@ async function sendMessage() {
     saveChatHistory();
     renderChatMessages();
     scrollToBottom();
+    logThinking('AI 回复完成 (' + response.length + ' 字)', 'done');
+    logThinking('对话历史已保存到本地', 'info');
   } catch (err) {
     chatMessages.pop();
     chatMessages.push({ role: 'assistant', content: '抱歉，请求失败：' + err.message, error: true });
     saveChatHistory();
     renderChatMessages();
+    logThinking('调用失败：' + err.message, 'error');
   }
 
   updateSendButton();
@@ -1218,6 +1254,24 @@ function saveToNotebook(btn) {
   }, 1500);
 }
 
+// ==================== THINKING LOG ====================
+function logThinking(msg, type) {
+  type = type || 'info';
+  var panel = document.getElementById('thinkLogs');
+  if (!panel) return;
+  var time = new Date().toLocaleTimeString();
+  var div = document.createElement('div');
+  div.className = 'think-log ' + type;
+  div.innerHTML = '<span class="think-log-time">' + time + '</span>' + msg;
+  panel.appendChild(div);
+  panel.scrollTop = panel.scrollHeight;
+}
+
+function clearThinking() {
+  var panel = document.getElementById('thinkLogs');
+  if (panel) panel.innerHTML = '<div class="think-log info">等待你的输入...</div>';
+}
+
 // ==================== PAGE EDIT (AI self-modify) ====================
 const PAGE_EDIT_PROMPT = `你是一个网页代码生成器，可以修改当前运行的网页。用户会描述页面修改需求。
 
@@ -1313,6 +1367,11 @@ async function editPage(userRequest) {
   const apiKey = document.getElementById('aiApiKey').value.trim();
   if (!apiKey) { alert('请先配置 API Key'); return; }
 
+  logThinking('启动页面编辑模式', 'step');
+  logThinking('分析需求：' + userRequest.substring(0, 80), 'info');
+  logThinking('生成编辑指令Prompt...', 'info');
+  logThinking('下发AI代码生成请求...', 'step');
+
   // Add to chat display
   chatMessages.push({ role: 'user', content: '编辑页面：' + userRequest });
   chatMessages.push({ role: 'assistant', content: '', loading: true });
@@ -1333,17 +1392,19 @@ async function editPage(userRequest) {
 
     // Clean code
     let code = rawCode.trim();
-    // Remove markdown fences if present
     code = code.replace(/^```(?:javascript|js)?\s*\n?/i, '').replace(/\n?\s*```$/i, '');
-    // Remove wrapping IIFE if needed to extract just the code
-    // But keep it if it's well-formed
+
+    logThinking('AI返回代码 (' + code.length + ' 字符)', 'step');
+    logThinking(code.substring(0, 200), 'code');
 
     // Apply the edit
     eval(code);
+    logThinking('代码执行成功，页面已更新', 'done');
 
     // Save
     pageEdits.push({ request: userRequest, code, time: Date.now() });
     localStorage.setItem(PAGE_EDITS_KEY, JSON.stringify(pageEdits));
+    logThinking('修改已保存到本地，刷新后保留', 'info');
 
     // Update UI
     document.getElementById('resetPageBtn').style.display = 'inline-block';
@@ -1352,6 +1413,7 @@ async function editPage(userRequest) {
     chatMessages.pop();
     chatMessages.push({ role: 'assistant', content: '页面修改已生效，刷新后仍然保留。如需恢复，点击「恢复默认」按钮。' });
   } catch (err) {
+    logThinking('代码生成/执行失败：' + err.message, 'error');
     chatMessages.pop();
     chatMessages.push({ role: 'assistant', content: '修改失败：' + err.message, error: true });
   }
@@ -1413,6 +1475,7 @@ async function callAIForEdit(userRequest, apiKey, provider) {
 
 function resetAllEdits() {
   if (!confirm('确定恢复所有页面修改为默认状态？')) return;
+  logThinking('恢复默认设置，清除 ' + pageEdits.length + ' 条修改', 'step');
   pageEdits = [];
   localStorage.removeItem(PAGE_EDITS_KEY);
   location.reload();
