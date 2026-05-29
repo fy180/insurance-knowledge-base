@@ -955,10 +955,32 @@ document.getElementById('clearChatBtn').addEventListener('click', () => {
   renderChatMessages();
 });
 
+// Detect if user wants to modify the page
+function isPageEditRequest(text) {
+  const editPatterns = [
+    /改(变|成|为|一下|个)?.*(颜色|背景|字体|大小|宽度|高度|边距|样式|布局)/,
+    /(换成|改成|设置|调整为?|更换|替换).*(颜色|背景|字体|样式|布局)/,
+    /(添加|增加|删除|去掉|隐藏|显示).*(菜单|按钮|卡片|侧边栏|栏目|模块|页面|标题)/,
+    /(把|将|让).*(变|改|换|设置|调整).*(成|为|到)/,
+    /(修改|调整|更换|换)(一下|这个)?(颜色|背景|样式|主题|字体|布局|菜单)/,
+    /(颜色|背景|字体|主题|样式).*(太|不够|不好|难看|换|改)/,
+    /(帮我|请|麻烦).*(改|换|调整|添加|删除|设置|美化)/,
+  ];
+  return editPatterns.some(p => p.test(text));
+}
+
 async function sendMessage() {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if (!text) return;
+
+  // Auto-route page edit requests
+  if (isPageEditRequest(text)) {
+    input.value = '';
+    input.style.height = 'auto';
+    editPage(text);
+    return;
+  }
 
   const apiKey = document.getElementById('aiApiKey').value.trim();
   if (!apiKey) {
