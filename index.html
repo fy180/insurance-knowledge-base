@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>保险产品经理知识库</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f1f5; display: flex; height: 100vh; overflow: hidden; }
+
+/* ========== Sidebar ========== */
+.sidebar { width: 260px; min-width: 260px; background: #1e1e2f; color: #ccc; display: flex; flex-direction: column; overflow-y: auto; }
+.sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.sidebar-header h2 { color: #fff; font-size: 16px; font-weight: 600; }
+.sidebar-header p { font-size: 11px; color: #666; margin-top: 2px; }
+.sidebar-nav { flex: 1; padding: 12px 0; }
+.nav-section { margin-bottom: 4px; }
+.nav-section-title { padding: 8px 20px; font-size: 10px; text-transform: uppercase; color: #555; letter-spacing: 1px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 20px; cursor: pointer;
+  font-size: 13px; transition: all 0.15s; border-left: 3px solid transparent; color: #aaa;
+}
+.nav-item:hover { background: rgba(255,255,255,0.05); color: #ddd; }
+.nav-item.active { background: rgba(124,111,247,0.12); color: #a78bfa; border-left-color: #7c6ff7; }
+.nav-item .nav-icon { width: 20px; text-align: center; font-size: 14px; flex-shrink: 0; }
+
+/* Notebook sub-items */
+.note-list { padding-left: 20px; }
+.note-item {
+  display: flex; align-items: center; gap: 6px; padding: 6px 20px 6px 50px; cursor: pointer;
+  font-size: 12px; color: #888; transition: all 0.15s;
+}
+.note-item:hover { color: #ccc; background: rgba(255,255,255,0.03); }
+.note-item.active { color: #a78bfa; }
+.note-item .note-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.note-item .note-del { opacity: 0; font-size: 11px; color: #e74c3c; cursor: pointer; transition: opacity 0.15s; padding: 2px 4px; }
+.note-item:hover .note-del { opacity: 0.6; }
+.note-item .note-del:hover { opacity: 1; }
+.add-note-btn { margin: 4px 20px 8px 50px; padding: 5px 10px; font-size: 11px; color: #7c6ff7; background: rgba(124,111,247,0.08); border: 1px dashed rgba(124,111,247,0.3); border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.15s; }
+.add-note-btn:hover { background: rgba(124,111,247,0.15); }
+
+/* ========== Main ========== */
+.main { flex: 1; overflow-y: auto; padding: 30px; }
+.page { display: none; }
+.page.active { display: block; }
+
+.page-header { margin-bottom: 24px; }
+.page-header h1 { font-size: 22px; color: #1e1e2f; margin-bottom: 4px; }
+.page-header p { font-size: 13px; color: #888; }
+
+/* ========== Content Cards ========== */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.card {
+  background: #fff; border-radius: 10px; padding: 18px 20px 26px; box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  cursor: pointer; transition: all 0.2s; border-left: 4px solid transparent; position: relative;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+.card .hint { position: absolute; right: 16px; bottom: 8px; font-size: 10px; color: #7cb8e4; transition: color 0.2s; }
+.card:hover .hint { color: #4a90d9; }
+.card .c-icon { font-size: 22px; margin-bottom: 8px; }
+.card h3 { font-size: 14px; color: #1e1e2f; margin-bottom: 6px; }
+.card .desc { font-size: 12px; color: #888; line-height: 1.5; }
+
+/* Knowledge sections (non-card content) */
+.knowledge-section { margin-bottom: 28px; }
+.knowledge-section h3 { font-size: 16px; color: #1e1e2f; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #f0f0f5; }
+.knowledge-block { background: #fff; border-radius: 10px; padding: 20px 24px; margin-bottom: 14px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); }
+.knowledge-block h4 { font-size: 14px; color: #7c6ff7; margin-bottom: 8px; }
+.knowledge-block p { font-size: 13px; color: #555; line-height: 1.8; }
+.knowledge-block ul { margin-left: 16px; margin-top: 4px; }
+.knowledge-block li { font-size: 13px; color: #555; line-height: 1.8; }
+
+/* Two columns for file type page */
+.two-cols { display: grid; grid-template-columns: 1fr 0.6fr; gap: 20px; }
+@media (max-width: 900px) { .two-cols { grid-template-columns: 1fr; } }
+.col-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding-bottom: 8px; }
+.col-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+.col-header .dot.req { background: #e74c3c; }
+.col-header .dot.cond { background: #f39c12; }
+.col-header h3 { font-size: 14px; }
+.col-header .count { font-size: 12px; color: #999; }
+.col-header.req-header { border-bottom: 2px solid #fde8e8; }
+.col-header.cond-header { border-bottom: 2px solid #fef3cd; }
+
+.card.req { border-left-color: #e74c3c; }
+.card.req .c-icon { color: #e74c3c; }
+.card.cond { border-left-color: #f39c12; }
+.card.cond .c-icon { color: #f39c12; }
+.badge { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 10px; font-weight: 500; margin-top: 4px; }
+.badge-req { background: #fde8e8; color: #c0392b; }
+.badge-cond { background: #fef3cd; color: #b8860b; }
+
+/* ========== Notebook ========== */
+.notebook-layout { display: flex; gap: 20px; height: calc(100vh - 140px); }
+.note-list-panel { width: 240px; min-width: 240px; background: #fff; border-radius: 10px; padding: 12px 0; box-shadow: 0 1px 6px rgba(0,0,0,0.04); overflow-y: auto; }
+.note-list-panel h3 { padding: 0 16px 10px; font-size: 13px; color: #888; border-bottom: 1px solid #f0f0f0; margin-bottom: 4px; }
+.note-list-item {
+  padding: 10px 16px; cursor: pointer; font-size: 13px; color: #555; transition: all 0.15s;
+  border-left: 3px solid transparent; display: flex; align-items: center; justify-content: space-between;
+}
+.note-list-item:hover { background: #f8f8fc; }
+.note-list-item.active { background: #f0edff; color: #7c6ff7; border-left-color: #7c6ff7; }
+.note-list-item .n-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.note-list-item .n-date { font-size: 10px; color: #aaa; margin-left: 8px; flex-shrink: 0; }
+.note-editor { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+.note-editor input { padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 15px; outline: none; }
+.note-editor input:focus { border-color: #7c6ff7; }
+.note-editor textarea { flex: 1; padding: 12px 14px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; line-height: 1.7; outline: none; resize: none; font-family: inherit; }
+.note-editor textarea:focus { border-color: #7c6ff7; }
+.note-actions { display: flex; gap: 8px; }
+.btn { padding: 8px 18px; border-radius: 8px; font-size: 13px; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-primary { background: #7c6ff7; color: #fff; }
+.btn-primary:hover { background: #5c55a8; }
+.btn-danger { background: #fff; color: #e74c3c; border: 1px solid #e74c3c; }
+.btn-danger:hover { background: #fde8e8; }
+.btn-secondary { background: #fff; color: #7c6ff7; border: 1px solid #7c6ff7; }
+.btn-secondary:hover { background: #f0edff; }
+.note-empty { text-align: center; color: #aaa; padding: 40px; font-size: 14px; }
+
+/* ========== AI Chat ========== */
+.chat-container { display: flex; flex-direction: column; height: calc(100vh - 140px); max-width: 800px; }
+.chat-config { background: #fff; border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); }
+.config-row { display: flex; gap: 10px; align-items: center; }
+.config-row select { padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; outline: none; background: #fff; }
+.config-row select:focus { border-color: #7c6ff7; }
+.config-row input { flex: 1; padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; outline: none; }
+.config-row input:focus { border-color: #7c6ff7; }
+.config-hint { font-size: 11px; color: #4caf50; margin-top: 6px; }
+.config-hint.error { color: #e74c3c; }
+.chat-messages { flex: 1; overflow-y: auto; background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); }
+.chat-welcome { text-align: center; padding: 40px 20px; }
+.chat-welcome .welcome-icon { font-size: 48px; margin-bottom: 12px; }
+.chat-welcome h3 { font-size: 18px; color: #1e1e2f; margin-bottom: 8px; }
+.chat-welcome p { font-size: 13px; color: #888; margin-bottom: 14px; }
+.welcome-tips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.welcome-tips span { background: #f0edff; color: #7c6ff7; padding: 4px 12px; border-radius: 14px; font-size: 12px; }
+.chat-msg { margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.chat-msg .msg-role { font-size: 11px; color: #888; margin-bottom: 4px; font-weight: 500; }
+.chat-msg.user .msg-role { text-align: right; color: #7c6ff7; }
+.chat-msg .msg-content { font-size: 13px; line-height: 1.7; color: #333; padding: 10px 16px; border-radius: 12px; max-width: 85%; }
+.chat-msg.user .msg-content { background: #f0edff; color: #333; margin-left: auto; border-bottom-right-radius: 4px; }
+.chat-msg.assistant .msg-content { background: #f5f5f8; border-bottom-left-radius: 4px; }
+.chat-msg.assistant .msg-content p { margin-bottom: 6px; }
+.chat-msg.assistant .msg-content p:last-child { margin-bottom: 0; }
+.chat-msg.assistant .msg-content ul, .chat-msg.assistant .msg-content ol { margin: 4px 0 8px 18px; }
+.chat-msg.assistant .msg-content li { margin-bottom: 2px; }
+.chat-msg.assistant .msg-content strong { color: #7c6ff7; }
+.chat-msg.assistant .msg-content code { background: #e8e8f0; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+.chat-msg .save-note-btn { display: inline-block; margin-top: 8px; font-size: 11px; color: #7c6ff7; cursor: pointer; background: #fff; border: 1px solid #e0dff5; padding: 3px 10px; border-radius: 12px; transition: all 0.15s; }
+.chat-msg .save-note-btn:hover { background: #f0edff; border-color: #7c6ff7; }
+.msg-loading .msg-content { color: #888; }
+.msg-loading .msg-content::after { content: ''; animation: dots 1.4s infinite; }
+@keyframes dots { 0%,20% { content: '.'; } 40% { content: '..'; } 60%,100% { content: '...'; } }
+.chat-input-area { display: flex; gap: 8px; align-items: flex-end; }
+.chat-input-area textarea { flex: 1; padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 13px; line-height: 1.5; outline: none; resize: none; font-family: inherit; min-height: 42px; max-height: 120px; }
+.chat-input-area textarea:focus { border-color: #7c6ff7; }
+.chat-input-area .btn { flex-shrink: 0; }
+.chat-input-area .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+/* Agent Management */
+.agent-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.agent-card { background: #f8f8fc; border-radius: 10px; padding: 16px 18px; cursor: pointer; transition: all 0.15s; border-left: 3px solid transparent; position: relative; }
+.agent-card:hover { background: #f0edff; }
+.agent-card.selected { border-left-color: #7c6ff7; background: #f0edff; }
+.agent-card h5 { font-size: 14px; color: #1e1e2f; margin-bottom: 4px; }
+.agent-card .agent-prompt-preview { font-size: 11px; color: #888; line-height: 1.4; max-height: 2.8em; overflow: hidden; }
+.agent-card .agent-actions { position: absolute; right: 14px; top: 16px; display: flex; gap: 6px; opacity: 0; transition: opacity 0.15s; }
+.agent-card:hover .agent-actions { opacity: 1; }
+.agent-card .agent-action-btn { font-size: 11px; padding: 2px 8px; border-radius: 4px; border: none; cursor: pointer; background: #fff; color: #666; }
+.agent-card .agent-action-btn.danger { color: #e74c3c; }
+.agent-card .agent-action-btn:hover { background: #f0edff; }
+.agent-form { display: flex; flex-direction: column; gap: 12px; }
+.agent-form label { font-size: 12px; color: #888; font-weight: 500; }
+.agent-form input, .agent-form textarea, .agent-form select { padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; outline: none; font-family: inherit; }
+.agent-form input:focus, .agent-form textarea:focus, .agent-form select:focus { border-color: #7c6ff7; }
+.agent-form textarea { resize: vertical; min-height: 100px; }
+.agent-form-btns { display: flex; gap: 8px; justify-content: flex-end; }
+
+.coverage-section { margin-bottom: 28px; }
+.coverage-section h3 { font-size: 16px; color: #1e1e2f; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #f0f0f5; display: flex; align-items: center; gap: 8px; }
+.coverage-section h3 .cat-badge { font-size: 11px; font-weight: 400; color: #7c6ff7; background: #f0edff; padding: 2px 10px; border-radius: 12px; }
+.coverage-card {
+  background: #fff; border-radius: 10px; padding: 16px 20px; margin-bottom: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 14px; border-left: 4px solid #7c6ff7;
+}
+.coverage-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+.coverage-card .cov-icon { font-size: 24px; flex-shrink: 0; width: 40px; text-align: center; }
+.coverage-card .cov-info { flex: 1; }
+.coverage-card .cov-info h4 { font-size: 14px; color: #1e1e2f; margin-bottom: 3px; }
+.coverage-card .cov-info .cov-desc { font-size: 12px; color: #888; }
+.coverage-card .cov-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.cov-type-badge { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 500; white-space: nowrap; }
+.cov-type-badge.pay { background: #fde8ef; color: #c0397e; }      /* 给付型 */
+.cov-type-badge.reimburse { background: #e3f0fd; color: #2471c4; } /* 报销型 */
+.cov-type-badge.allowance { background: #fef3e0; color: #b87a14; }  /* 津贴型 */
+.cov-type-badge.service { background: #e6f5e8; color: #2d7a3a; }    /* 服务型 */
+.cov-type-badge.special { background: #f0edff; color: #6b5ce7; }    /* 特殊 */
+.coverage-card .cov-arrow { color: #ccc; font-size: 16px; flex-shrink: 0; }
+/* Product cards in modal */
+.product-card { background: #f8f8fc; border-radius: 10px; padding: 14px 18px; margin-top: 12px; border-left: 3px solid #7c6ff7; }
+.product-card h5 { font-size: 13px; color: #7c6ff7; margin-bottom: 6px; }
+.product-card .prod-detail { font-size: 12px; color: #555; line-height: 1.7; white-space: pre-line; }
+
+/* ========== Modal ========== */
+.overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+.overlay.show { display: flex; }
+.modal { background: #fff; border-radius: 16px; width: 640px; max-width: 92vw; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: pop 0.25s ease-out; }
+@keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-header { padding: 24px 28px 0; display: flex; align-items: center; gap: 14px; position: relative; }
+.modal-header h2 { font-size: 18px; color: #2c3e50; }
+.modal-body { padding: 20px 28px 28px; }
+.modal-body h4 { font-size: 13px; color: #888; margin-bottom: 6px; margin-top: 16px; }
+.modal-body h4:first-child { margin-top: 0; }
+.modal-body .desc-text { font-size: 14px; color: #444; line-height: 1.8; }
+.note-box { background: #fef9e7; border-left: 3px solid #e8b55a; padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 13px; color: #8a6d14; margin-top: 12px; }
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .sidebar.open { display: flex; position: fixed; z-index: 300; height: 100%; }
+  .notebook-layout { flex-direction: column; height: auto; }
+  .note-list-panel { width: 100%; max-height: 200px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h2>保险知识库</h2>
+    <p>产品经理专用</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">知识模块</div>
+      <div class="nav-item active" data-page="filetypes"><span class="nav-icon">📋</span>文件类型说明</div>
+      <div class="nav-item" data-page="products"><span class="nav-icon">📦</span>保险产品类型</div>
+      <div class="nav-item" data-page="principles"><span class="nav-icon">📖</span>保险原理</div>
+      <div class="nav-item" data-page="clauses"><span class="nav-icon">📜</span>保险条款解读</div>
+      <div class="nav-item" data-page="coverages"><span class="nav-icon">🛡️</span>保险责任展示</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">AI 工具</div>
+      <div class="nav-item" data-page="aichat"><span class="nav-icon">🤖</span>保险AI助手</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">个人工具</div>
+      <div class="nav-item" data-page="notebook"><span class="nav-icon">📒</span>保险笔记本</div>
+      <div id="sidebarNoteList"></div>
+      <div class="add-note-btn" id="sidebarAddNote">+ 新建笔记</div>
+    </div>
+  </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main" id="main">
+
+  <!-- ==================== 文件类型说明 ==================== -->
+  <div class="page active" id="page-filetypes">
+    <div class="page-header">
+      <h1>保险产品文件类型说明</h1>
+      <p>共 12 类文件 · 左侧必须提供 · 右侧条件性必须 · 点击卡片查看案例</p>
+    </div>
+    <div class="two-cols" id="filetypeGrids"></div>
+  </div>
+
+  <!-- ==================== 保险产品类型 ==================== -->
+  <div class="page" id="page-products">
+    <div class="page-header"><h1>保险产品类型</h1><p>人身险与财产险的分类体系及各类型特征</p></div>
+    <div class="knowledge-section">
+      <h3>一、人身保险</h3>
+      <div class="knowledge-block">
+        <h4>1. 人寿保险</h4>
+        <p>以人的寿命为保险标的。核心解决"死得太早"或"活得太久"的风险。</p>
+        <ul>
+          <li><strong>定期寿险：</strong>约定期间内身故赔付，纯保障型，保费低。适合家庭经济支柱。例：保至60岁，100万保额，30岁男性年缴约1000元。</li>
+          <li><strong>终身寿险：</strong>保障终身，必定赔付，兼具储蓄功能，保费高。适合财富传承。</li>
+          <li><strong>两全保险：</strong>生存至满期给付生存金，身故给付身故金。"生死两全"，储蓄性强。</li>
+          <li><strong>年金保险：</strong>以生存为给付条件，按期给付年金。解决"长寿风险"，用于养老规划。</li>
+        </ul>
+      </div>
+      <div class="knowledge-block">
+        <h4>2. 健康保险</h4>
+        <p>以被保险人身体健康为保险标的，补偿疾病或意外导致的医疗费用或收入损失。</p>
+        <ul>
+          <li><strong>医疗保险（医疗险）：</strong>报销型，补偿医疗费用。分百万医疗险、中端医疗险、高端医疗险。典型产品：尊享e生、好医保。</li>
+          <li><strong>疾病保险（重疾险）：</strong>给付型，确诊即赔。覆盖恶性肿瘤、心梗、脑中风等。保额通常10-100万。例：达尔文、超级玛丽系列。</li>
+          <li><strong>护理保险：</strong>因年老、疾病或伤残需长期护理时，给付护理金。</li>
+          <li><strong>失能收入损失保险：</strong>因疾病或意外丧失工作能力时，给付收入补偿。</li>
+        </ul>
+      </div>
+      <div class="knowledge-block">
+        <h4>3. 意外伤害保险</h4>
+        <p>以外来的、突发的、非本意的、非疾病的客观事件导致的身故或伤残为给付条件。</p>
+        <ul>
+          <li><strong>综合意外险：</strong>覆盖意外身故、伤残、医疗。通常一年期，保费几十到几百元。</li>
+          <li><strong>交通意外险：</strong>针对特定交通工具（飞机、火车、汽车等）的意外保障，保额高、保费极低。</li>
+          <li><strong>旅游意外险：</strong>覆盖旅行期间的意外、医疗、行李丢失、航班延误等。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="knowledge-section">
+      <h3>二、财产保险</h3>
+      <div class="knowledge-block">
+        <h4>1. 企业财产保险</h4>
+        <p>承保企业固定资产、存货等因火灾、爆炸、自然灾害等造成的损失。适用于工厂、仓库、商场等。</p>
+      </div>
+      <div class="knowledge-block">
+        <h4>2. 家庭财产保险</h4>
+        <p>承保房屋及室内财产因火灾、盗窃、水管爆裂等造成的损失。通常年保费几十到几百元。</p>
+      </div>
+      <div class="knowledge-block">
+        <h4>3. 责任保险</h4>
+        <ul>
+          <li><strong>公众责任险：</strong>经营场所发生意外导致第三方人身/财产损失。</li>
+          <li><strong>产品责任险：</strong>产品缺陷致人损害。</li>
+          <li><strong>雇主责任险：</strong>员工工伤的雇主赔偿责任。</li>
+          <li><strong>职业责任险：</strong>专业服务过失导致的客户损失（如医生、律师、建筑师）。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 保险原理 ==================== -->
+  <div class="page" id="page-principles">
+    <div class="page-header"><h1>保险原理</h1><p>保险运作的底层逻辑与核心概念</p></div>
+    <div class="knowledge-block">
+      <h4>大数法则（Law of Large Numbers）</h4>
+      <p>保险的数学基础。当投保人数足够大时，实际出险率趋近于精算预测的概率。举例：精算预测某年龄段重疾发生率5‰，如果只有100人投保，实际可能偏差很大；如有100万人投保，出险人数会非常接近5000人。这就是为什么保险公司需要足够大的客户基数来稳定赔付率。</p>
+    </div>
+    <div class="knowledge-block">
+      <h4>风险分散（Risk Pooling）</h4>
+      <p>将大量个体的风险集中到一个池子中，由所有参保人共同分担少数人的损失。每个参保人缴纳少量保费，只有出险的人获得赔付。实现"人人为我，我为人人"。</p>
+    </div>
+    <div class="knowledge-block">
+      <h4>精算定价（Actuarial Pricing）</h4>
+      <p>保费 = 纯风险保费 + 附加保费。纯风险保费基于：出险概率 × 平均赔付金额。附加保费覆盖：运营成本、佣金、利润、风险边际。精算师使用生命表、疾病发生率表等数据建模。关键因素：年龄、性别、职业、健康状况、保额、保障期限。</p>
+    </div>
+    <div class="knowledge-block">
+      <h4>核保（Underwriting）</h4>
+      <p>保险公司评估投保人风险并决定是否承保、以什么条件承保的过程：</p>
+      <ul>
+        <li><strong>标准体：</strong>正常承保，按标准费率</li>
+        <li><strong>次标准体：</strong>加费承保或除外承保</li>
+        <li><strong>延期：</strong>暂时不承保，观察一段时间</li>
+        <li><strong>拒保：</strong>风险过高，不予承保</li>
+      </ul>
+      <p style="margin-top:8px">核保手段包括：健康告知、体检、生存调查（高保额）、财务核保（核实收入与保额匹配）。</p>
+    </div>
+    <div class="knowledge-block">
+      <h4>理赔流程（Claims Process）</h4>
+      <ul>
+        <li><strong>报案：</strong>出险后在约定时限内通知保司（通常10天）</li>
+        <li><strong>立案：</strong>保司登记并安排查勘/调查</li>
+        <li><strong>审核：</strong>核实事故是否属于保险责任范围、是否存在免责情形、理赔材料是否齐全</li>
+        <li><strong>理算：</strong>计算赔付金额</li>
+        <li><strong>结案：</strong>赔付或拒赔，通知投保人</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ==================== 保险条款解读 ==================== -->
+  <div class="page" id="page-clauses">
+    <div class="page-header"><h1>保险条款解读</h1><p>常见条款术语的含义与产品设计中的注意事项</p></div>
+    <div class="knowledge-block">
+      <h4>等待期（Waiting Period）</h4>
+      <p>保单生效后的一段时间内，即使发生保险事故也不赔付。目的是防止带病投保（逆选择）。</p>
+      <ul><li>医疗险：通常30天（疾病），意外无等待期</li><li>重疾险：通常90-180天</li><li>寿险：通常无等待期（自杀条款除外：2年）</li></ul>
+    </div>
+    <div class="knowledge-block">
+      <h4>免赔额（Deductible）</h4>
+      <p>保险事故发生后，由被保险人自行承担的金额。超过免赔额的部分由保司赔付。</p>
+      <ul><li><strong>绝对免赔额：</strong>固定金额（如1万元），社保报销不可抵扣</li><li><strong>相对免赔额：</strong>社保报销可抵扣免赔额</li><li><strong>年度免赔额 vs 单次免赔额：</strong>年度内累计计算还是每次单独计算</li></ul>
+    </div>
+    <div class="knowledge-block">
+      <h4>赔付比例（Reimbursement Ratio）</h4>
+      <p>保司承担的医疗费用比例。如赔付比例80%，被保险人自付20%。常见区分：</p>
+      <ul><li>有社保版：社保报销后，剩余部分100%赔付</li><li>无社保版：按60%-80%赔付</li><li>重疾医疗：通常100%赔付</li></ul>
+    </div>
+    <div class="knowledge-block">
+      <h4>犹豫期（Cooling-off Period）</h4>
+      <p>投保人收到保险合同后，可无条件全额退保的期限。监管部门要求长期人身保险犹豫期不少于15天。犹豫期内退保，保司扣除工本费（通常不超过10元）后退还全部保费。</p>
+    </div>
+    <div class="knowledge-block">
+      <h4>宽限期（Grace Period）</h4>
+      <p>到期未缴保费后的一段时间，在此期间保单仍然有效。通常为60天（长期险）。宽限期内发生保险事故，保司赔付但扣除欠缴保费。</p>
+    </div>
+    <div class="knowledge-block">
+      <h4>现金价值（Cash Value）</h4>
+      <p>长期人身保险保单的储蓄部分，是投保人退保时可拿回的金额。前几年现金价值极低（因扣除佣金和费用），后期逐步增长。退保金 = 现金价值，而非已缴保费。</p>
+    </div>
+    <div class="knowledge-block">
+      <h4>保证续保（Guaranteed Renewal）</h4>
+      <p>保险期满后，投保人申请续保时，保司必须同意且不能单独调整费率。与非保证续保的核心区别在于：即使被保人已出险或健康状况恶化，保司也不能拒绝续保。目前监管对一年期医疗险不允许在条款中写"保证续保"（长期医疗险除外）。</p>
+    </div>
+    <div class="knowledge-block">
+      <h4>如实告知义务</h4>
+      <p>投保人必须如实回答保司的健康询问。如故意隐瞒或重大过失未告知，保司有权解除合同且不赔付。产品经理需确保健康告知的措辞清晰、范围合理，不能问过于宽泛的问题（如"是否有任何疾病"）。</p>
+    </div>
+    <div class="knowledge-block">
+      <h4>责任免除（Exclusions）</h4>
+      <p>明确不承担保险责任的情形。常见免责：投保人故意杀害被保险人、被保险人故意犯罪、酒后驾驶、战争、核辐射、既往症、美容整形、高危运动。产品设计时需确保免责条款符合监管要求，且以醒目方式呈现。</p>
+    </div>
+  </div>
+
+  <!-- ==================== 保险责任展示 ==================== -->
+  <div class="page" id="page-coverages">
+    <div class="page-header">
+      <h1>保险责任展示</h1>
+      <p>常见保险责任类型及对应的示例产品 · 点击卡片查看详情</p>
+    </div>
+    <div class="coverage-sections" id="coverageSections"></div>
+  </div>
+
+  <!-- ==================== 保险AI助手 ==================== -->
+  <div class="page" id="page-aichat">
+    <div class="page-header">
+      <h1>保险AI助手</h1>
+      <p>基于大模型的保险知识问答，支持通义千问 / Claude / GPT</p>
+    </div>
+    <div class="chat-container">
+      <!-- API Config -->
+      <div class="chat-config" id="chatConfig">
+        <div class="config-row">
+          <select id="aiProvider">
+            <option value="dashscope">阿里云 (通义千问)</option>
+            <option value="anthropic">Anthropic (Claude)</option>
+            <option value="openai">OpenAI (GPT-4o)</option>
+          </select>
+          <input type="password" id="aiApiKey" placeholder="输入 API Key...">
+          <button class="btn btn-primary" id="saveApiKey">保存配置</button>
+        </div>
+        <div class="config-hint" id="configHint"></div>
+        <div class="config-row" style="margin-top:8px">
+          <select id="agentSelect" style="flex:1"><option value="default">保险专家（默认）</option></select>
+          <button class="btn btn-secondary" id="manageAgentsBtn" style="white-space:nowrap">Agent 管理</button>
+        </div>
+      </div>
+      <!-- Chat Messages -->
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-welcome">
+          <div class="welcome-icon">🤖</div>
+          <h3>保险AI助手</h3>
+          <p>我是保险产品经理专属 AI 助手，可以帮你：</p>
+          <div class="welcome-tips">
+            <span>解读保险条款</span><span>分析产品方案</span><span>解释保险原理</span>
+            <span>对比产品差异</span><span>解答核保理赔问题</span><span>提供行业知识</span>
+          </div>
+        </div>
+      </div>
+      <!-- Chat Input -->
+      <div class="chat-input-area">
+        <textarea id="chatInput" placeholder="输入你的保险相关问题..." rows="1"></textarea>
+        <button class="btn btn-primary" id="sendChatBtn" disabled>发送</button>
+        <button class="btn btn-secondary" id="clearChatBtn">清空对话</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 保险笔记本 ==================== -->
+  <div class="page" id="page-notebook">
+    <div class="page-header">
+      <h1>保险笔记本</h1>
+      <p>记录你的学习心得、产品分析、会议备忘</p>
+    </div>
+    <div class="notebook-layout">
+      <div class="note-list-panel">
+        <h3>笔记列表</h3>
+        <div id="noteList"></div>
+        <button class="btn btn-primary" style="width:calc(100% - 32px);margin:8px 16px" onclick="createNote()">+ 新建笔记</button>
+      </div>
+      <div class="note-editor" id="noteEditor">
+        <div class="note-empty" id="noteEmpty">选择一条笔记，或点击「新建笔记」开始记录</div>
+        <input type="text" id="noteTitle" placeholder="笔记标题..." style="display:none">
+        <textarea id="noteContent" placeholder="在此记录你的笔记..." style="display:none"></textarea>
+        <div class="note-actions" id="noteActions" style="display:none">
+          <button class="btn btn-primary" onclick="saveCurrentNote()">保存</button>
+          <button class="btn btn-danger" onclick="deleteCurrentNote()">删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal" onclick="event.stopPropagation()">
+    <div class="modal-header"><h2 id="modalTitle"></h2></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ======================== DATA ========================
+const fileTypeData = [
+  { name: '产品方案', required: true, icon: '📋', desc: '产品的整体方案说明文档，包含产品基本信息、投保规则、保障责任、费率等完整内容。',
+    example: { overview: '产品方案是产品的核心文档，通常为 PDF 或 Word 格式，是后续所有配置和审核的基础依据。',
+      sections: [
+        { title: '典型内容结构', content: '• 产品名称与产品代码\n• 投保年龄、职业、人数限制\n• 保障期限与缴费方式\n• 各险种责任列表及保额\n• 费率表或费率说明\n• 等待期、免赔额等关键参数' },
+        { title: '真实案例（百万医疗险）', content: '某百万医疗险产品方案示例：\n• 投保年龄：出生满30天-65周岁\n• 保障期限：1年（可续保至100岁）\n• 缴费方式：年缴/月缴\n• 等待期：疾病30天，意外0天\n• 免赔额：一般医疗1万元，重疾0免赔\n• 赔付比例：100%（有社保），60%（无社保）\n• 责任：一般医疗300万 + 重疾医疗600万 + 质子重离子100万 + 院外特药100万' }
+      ]}},
+  { name: '保障详情', required: true, icon: '🛡️', desc: '详细列出产品各项保障责任的具体内容、赔付条件、赔付限额等。',
+    example: { overview: '保障详情是消费者最关注的内容，通常用于投保页面的产品展示和条款解释。',
+      sections: [
+        { title: '典型内容', content: '• 每项责任的赔付金额/比例\n• 赔付次数限制（单次/年度/终身）\n• 赔付条件与免责情形\n• 医院等级与机构类型要求\n• 药品/诊疗项目范围' },
+        { title: '真实案例', content: '某重疾险保障详情：\n\n1. 重大疾病保险金（120种）：确诊即赔100%保额，限1次\n2. 中症疾病保险金（25种）：赔付50%保额，限2次\n3. 轻症疾病保险金（50种）：赔付30%保额，限3次\n4. 身故/全残保险金：赔付100%保额\n5. 轻症/中症豁免保费：确诊后免交后续保费，保障继续' }
+      ]}},
+  { name: '费率表', required: true, icon: '📊', desc: '不同年龄、性别、保额、缴费期限对应的保费标准表。',
+    example: { overview: '费率表是精算定价的直接体现，通常为 Excel 或结构化表格。',
+      sections: [
+        { title: '费率表结构', content: '• 年龄列（如 0-65岁，步长1岁）\n• 性别列（男/女）\n• 缴费期限（趸交/5年/10年/20年/30年）\n• 保障期限（定期/终身）\n• 每万元保额对应年保费\n• 不同社保状态费率差异' },
+        { title: '真实案例（定期寿险费率）', content: '某定期寿险费率示例（保至60岁，每10万元保额）：\n25岁男性：120元/年 · 25岁女性：65元/年\n35岁男性：280元/年 · 35岁女性：155元/年\n45岁男性：680元/年 · 45岁女性：380元/年\n— 费率随年龄、性别差异显著，是定价核心数据。' }
+      ]}},
+  { name: '保司产品代码、方案代码', required: true, icon: '🔢', desc: '保险公司内部的产品唯一标识编码和方案编码，用于对接保司系统。',
+    example: { overview: '产品代码和方案代码是保司核心系统对接的关键字段，错误将导致出单失败。',
+      sections: [
+        { title: '代码格式示例', content: '• Product Code：如 "PA0001234"、"LH-2024-0056"\n• Plan Code：如 "PLAN-A01"、"方案B_标准版"\n• 通常一对多：一个产品下可有多个方案\n• 各保司编码体系不统一，需严格按保司提供填写' },
+        { title: '真实案例', content: '某保险公司重疾险产品：\n保司产品代码：CI20240001\n方案代码：\n• CI20240001-BASIC（基础版，保至70岁）\n• CI20240001-STD（标准版，保至终身）\n• CI20240001-PREMIUM（尊享版，多次赔付）' },
+        { title: '注意', content: '保司产品代码 ≠ 元保内部产品ID。内部ID体系与保司代码做映射关系。' }
+      ]}},
+  { name: '保险条款', required: true, icon: '📜', desc: '保险合同的法律文本，包含保险责任、责任免除、合同解除等核心条款。',
+    example: { overview: '保险条款是合同的核心法律文件，监管要求必须提供，也是理赔的法律依据。',
+      sections: [
+        { title: '条款主要内容', content: '• 保险合同构成\n• 投保范围（谁能买）\n• 保险责任（保什么）\n• 责任免除（不保什么）\n• 保险金额与保险费\n• 保险期间与续保\n• 犹豫期与退保\n• 如实告知义务\n• 释义（专业术语定义）' },
+        { title: '真实案例（免责条款节选）', content: '某百万医疗险条款"责任免除"节选：\n\n因下列情形之一导致被保险人发生医疗费用的，本公司不承担给付保险金的责任：\n1. 投保人对被保险人的故意杀害、故意伤害；\n2. 被保险人故意自伤、故意犯罪或抗拒依法采取的刑事强制措施；\n3. 被保险人殴斗、醉酒，服用、吸食或注射毒品；\n4. 被保险人酒后驾驶、无合法有效驾驶证驾驶……\n5. 战争、军事冲突、暴乱或武装叛乱；\n6. 核爆炸、核辐射或核污染……\n— 通常有 15-20 条免责情形。' }
+      ]}},
+  { name: '免责说明', required: true, icon: '⚠️', desc: '对保险条款中责任免除部分的重点说明，需以醒目方式呈现给投保人。',
+    example: { overview: '免责说明是监管要求的消费者权益保护内容，必须以加粗、变色等醒目方式展示。',
+      sections: [
+        { title: '免责说明典型内容', content: '• 以"重要提示"或"特别说明"开头\n• 逐条列出不承保的情形\n• 常见免责：既往症、高危运动、美容整形、牙齿治疗（非意外）、不孕不育等' },
+        { title: '真实案例', content: '某医疗险免责说明（投保页面展示）：\n【重要提示】请仔细阅读以下不承保事项：\n⚠️ 投保前已患有的疾病及并发症（既往症），本公司不承担保险责任\n⚠️ 牙齿治疗（补牙、拔牙、矫正），除意外导致的牙科急诊外\n⚠️ 视力矫正、近视激光手术\n⚠️ 美容整形、减肥、增高\n⚠️ 不孕不育治疗及孕产相关费用\n⚠️ 康复治疗、养生保健、体检\n⚠️ 从事高风险运动期间发生的意外……\n— 通常用黄色/红色底色高亮展示在投保页面底部。' }
+      ]}},
+  { name: '投保须知', required: true, icon: '📝', desc: '投保前必须告知投保人的信息，包括投保条件、保费支付、退保规则等。',
+    example: { overview: '投保须知是投保流程中的必读环节，投保人需确认已阅读才能继续。',
+      sections: [
+        { title: '投保须知典型内容', content: '• 投保年龄/职业限制\n• 犹豫期天数（通常15天）\n• 退保现金价值说明\n• 续保规则（是否保证续保、续保年龄上限）\n• 保费支付方式与宽限期\n• 被保人健康告知义务\n• 理赔流程与时效\n• 争议处理方式（仲裁/诉讼）' },
+        { title: '真实案例', content: '某百万医疗险投保须知：\n一、投保条件\n1. 投保人：年满18周岁，具有完全民事行为能力\n2. 被保险人：出生满30天至65周岁\n二、等待期\n1. 疾病住院医疗：30天\n2. 重大疾病医疗：90天\n3. 意外医疗：无等待期\n三、犹豫期\n15日内退保全额退还保费。\n四、续保规则\n本产品不保证续保。需重新申请投保并经保险人审核同意。' }
+      ]}},
+  { name: '特别约定', required: true, icon: '📌', desc: '保险合同中的个性化约定，可能扩展或限制标准条款中的保障范围。',
+    example: { overview: '特别约定是保险合同的补充或修改，效力高于标准条款。如有冲突以特别约定为准。',
+      sections: [
+        { title: '特别约定常见类型', content: '• 扩展保障：如"扩展承保新冠肺炎导致的医疗费用"\n• 限制条件：如"不承保北京市平谷区、密云区所有医院"\n• 批量约定：团险的"以投保清单为准"\n• 费率调整：如"续保费率按首年上浮20%"' },
+        { title: '真实案例', content: '某意外险特别约定：\n1. 附加承保乘坐公共交通工具发生意外导致身故及伤残，保额翻倍。\n2. 住院津贴免赔3天，单次事故最高90天，年度累计最高180天。\n3. 就诊医院限境内二级及以上公立医院普通部。\n4. 不承保以下职业：矿工、采石工、高空作业人员、潜水员、职业运动员。' }
+      ]}},
+  { name: '健康告知', required: false, icon: '🏥', desc: '投保时对健康状况的问询。不免健告的新保重疾险、医疗险必须提供。',
+    condition: '不免健告的新保重疾险、医疗险必须提供',
+    example: { overview: '健康告知是保险公司评估风险的重要依据，投保人必须如实回答，隐瞒可能导致拒赔。',
+      sections: [
+        { title: '健康告知典型内容', content: '• 是否曾被拒保、延期、加费承保\n• 目前或曾经患有特定疾病\n• 近2年内是否住院/手术\n• 近1年内是否有体检异常\n• 职业/生活习惯（吸烟、饮酒等）\n• 女性和婴幼儿额外告知事项' },
+        { title: '真实案例', content: '【被保险人健康告知】\n1. 目前或曾经是否患有：恶性肿瘤、白血病、原位癌、肝硬化、慢性肝炎、肾功能衰竭、心脏病、脑中风、糖尿病……\n→ 是 □  → 否 □\n2. 最近2年内是否因疾病住院或手术？\n→ 是 □（说明原因：____） → 否 □\n3. 最近1年内是否有体检异常并被医生建议进一步检查？\n→ 是 □ → 否 □\n4. 是否曾被任何保险公司拒保、延期、加费或除外承保？\n→ 是 □ → 否 □\n— 如有"是"，可能无法通过智能核保，需进入人工核保流程。' }
+      ]}},
+  { name: '职业表', required: false, icon: '👷', desc: '职业分类等级表划分可投保职业范围。综合意外险必须提供。',
+    condition: '综合意外险必须提供，医疗险、重疾险需根据健康告知等确认',
+    example: { overview: '职业表是承保风险评估的重要依据，不同职业的风险等级决定是否可投保。',
+      sections: [
+        { title: '职业分类等级', content: '• 1类：低风险（办公室文员、教师）— 全部产品可投保\n• 2类：较低风险（销售、护士）— 大部分产品\n• 3类：中等风险（快递员、出租车司机）— 部分产品\n• 4类：较高风险（建筑工人、警察）— 少数产品\n• 5-6类：高风险（矿工、消防员）— 通常拒保' },
+        { title: '真实案例', content: '某综合意外险职业分类：\n1类（可投保）：\n机关行政人员、银行员工、教师、医生（非外科）、IT程序员\n3类（可投保，费率上浮）：\n快递员、室内装修工、出租车/网约车司机、厨师\n拒绝承保：\n矿工、采石工、高空作业人员（2米以上）、潜水员、职业运动员、现役军人（作战部队）' }
+      ]}},
+  { name: '疾病清单', required: false, icon: '🦠', desc: '承保疾病的具体列表及赔付标准。重疾险必须提供。',
+    condition: '重疾险必须提供，有重疾医疗责任的医疗险必须提供',
+    example: { overview: '疾病清单列出承保的各类疾病及赔付标准，是重疾险的核心文件。',
+      sections: [
+        { title: '疾病分类', content: '• 重大疾病（120种）：确诊即赔100%保额\n• 中症疾病（25种）：赔付50%保额\n• 轻症疾病（50种）：赔付30%保额\n• 特定疾病（少儿/男女特定疾病）：额外赔付' },
+        { title: '真实案例', content: '【重大疾病清单】（部分）\n1. 恶性肿瘤——重度：确诊即赔100%保额（不含原位癌）\n2. 较重急性心肌梗死\n3. 严重脑中风后遗症\n4. 重大器官移植术\n5. 冠状动脉搭桥术\n6. 严重慢性肾衰竭\n\n【轻症疾病清单】（部分）\n1. 恶性肿瘤——轻度（赔付30%）\n2. 较轻急性心肌梗死（赔付30%）\n3. 轻度脑中风后遗症（赔付30%）\n— 每个疾病都有详细的医学定义和赔付条件。' }
+      ]}},
+  { name: '药品清单', required: false, icon: '💊', desc: '有药品相关责任的产品需提供，列明承保范围内的药品清单。',
+    condition: '有药品相关责任的产品必须提供（除非明确说明不限清单）',
+    example: { overview: '药品清单常用于"院外特药责任"，明确哪些药品可报销及条件。',
+      sections: [
+        { title: '药品清单典型内容', content: '• 药品通用名与商品名\n• 生产厂家\n• 适应症\n• 是否医保目录内\n• 指定购药药房\n• 报销比例与限额' },
+        { title: '真实案例', content: '某百万医疗险院外特药清单（部分）：\n| 药品通用名 | 商品名 | 适应症 | 医保 |\n|奥希替尼|泰瑞沙|非小细胞肺癌|是|\n|帕博利珠单抗|可瑞达|肺癌、黑色素瘤|否|\n|阿来替尼|安圣莎|ALK+非小细胞肺癌|是|\n|曲妥珠单抗|赫赛汀|HER2+乳腺癌|是|\n— 使用条件：定点医院处方，指定药房购药。\n注：条款中"不限药品清单"则无需提供。' }
+      ]}},
+  { name: '增值服务手册', required: false, icon: '🎁', desc: '产品附带的增值服务详细说明。有增值服务的产品必须提供。',
+    condition: '有增值服务的产品必须提供',
+    example: { overview: '增值服务（VAS）是保障外的额外福利，需详细手册说明。',
+      sections: [
+        { title: '增值服务常见类型', content: '• 在线问诊（图文/视频）\n• 就医绿通（专家预约、住院/手术安排）\n• 第二诊疗意见（国内外专家会诊）\n• 健康体检 · 基因检测 · 送药上门\n• 心理咨询 · 健康管理\n• 齿科服务 · 海外就医协助' },
+        { title: '真实案例', content: '【就医绿色通道服务】\n1. 专家门诊预约：覆盖31省市1000+家三甲医院\n2. 住院安排：5个工作日内协调床位\n3. 手术安排：10个工作日内协调手术\n使用条件：仅限被保险人、需二级以上公立医院确诊、每年限1次\n服务流程：拨打400-XXX → 提供保单号 → 客服确认 → 安排医院\n\n【在线问诊】\n7×24小时医生图文问诊，不限次数\n路径：XX保险APP → 我的 → 增值服务 → 在线问诊' }
+      ]}}
+];
+
+// ======================== NAVIGATION ========================
+document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+  item.addEventListener('click', () => switchPage(item.dataset.page));
+});
+document.getElementById('sidebarAddNote').addEventListener('click', () => {
+  switchPage('notebook');
+  createNote();
+});
+
+function switchPage(pageName) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + pageName).classList.add('active');
+  document.querySelector(`.nav-item[data-page="${pageName}"]`).classList.add('active');
+  if (pageName === 'notebook') renderNoteList();
+}
+
+// ======================== FILE TYPE PAGE ========================
+function renderFileTypes() {
+  const reqItems = fileTypeData.filter(d => d.required);
+  const condItems = fileTypeData.filter(d => !d.required);
+  const reqGlobalIdx = reqItems.map(d => fileTypeData.indexOf(d));
+  const condGlobalIdx = condItems.map(d => fileTypeData.indexOf(d));
+
+  const reqGrid = reqItems.map((item, i) => buildFileCard(item, reqGlobalIdx[i], 'req')).join('');
+  const condGrid = condItems.map((item, i) => buildFileCard(item, condGlobalIdx[i], 'cond')).join('');
+
+  document.getElementById('filetypeGrids').innerHTML = `
+    <div>
+      <div class="col-header req-header"><div class="dot req"></div><h3>必须提供</h3><span class="count">(${reqItems.length} 项)</span></div>
+      <div class="grid">${reqGrid}</div>
+    </div>
+    <div>
+      <div class="col-header cond-header"><div class="dot cond"></div><h3>条件性必须</h3><span class="count">(${condItems.length} 项)</span></div>
+      <div class="grid">${condGrid}</div>
+    </div>`;
+}
+
+function buildFileCard(item, idx, type) {
+  return `<div class="card ${type}" onclick="openFileModal(${idx})">
+    <div class="c-icon">${item.icon}</div>
+    <h3>${item.name}</h3>
+    <span class="badge ${type === 'req' ? 'badge-req' : 'badge-cond'}">${type === 'req' ? '必须提供' : '条件性必须'}</span>
+    <div class="desc">${item.desc}</div>
+    <div class="hint">点击查看案例 →</div>
+  </div>`;
+}
+
+function openFileModal(i) {
+  const item = fileTypeData[i];
+  document.getElementById('modalTitle').textContent = item.icon + ' ' + item.name;
+  const sections = item.example.sections.map(s => `<h4>${s.title}</h4><div class="desc-text" style="white-space:pre-line">${s.content}</div>`).join('');
+  document.getElementById('modalBody').innerHTML = `<div class="desc-text">${item.example.overview}</div>${sections}${item.condition ? `<div class="note-box"><strong>必须条件：</strong>${item.condition}</div>` : ''}`;
+  document.getElementById('overlay').classList.add('show');
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('overlay')) return;
+  document.getElementById('overlay').classList.remove('show');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ======================== NOTEBOOK ========================
+const STORAGE_KEY = 'insurance_notes';
+let currentNoteId = null;
+
+function getNotes() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+function saveNotes(notes) { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); }
+
+function renderNoteList() {
+  const notes = getNotes();
+  const sidebarList = document.getElementById('sidebarNoteList');
+  const panelList = document.getElementById('noteList');
+
+  const html = notes.map(n => `
+    <div class="note-item ${n.id === currentNoteId ? 'active' : ''}" onclick="switchPage('notebook');selectNote('${n.id}')">
+      <span class="note-title">${escapeHtml(n.title || '无标题')}</span>
+      <span class="note-del" onclick="event.stopPropagation();deleteNoteById('${n.id}')">×</span>
+    </div>`).join('');
+
+  sidebarList.innerHTML = html;
+  panelList.innerHTML = notes.length ? html : '<div class="note-empty" style="padding:20px;font-size:12px">暂无笔记</div>';
+}
+
+function selectNote(id) {
+  const notes = getNotes();
+  const note = notes.find(n => n.id === id);
+  if (!note) return;
+  currentNoteId = id;
+  document.getElementById('noteTitle').style.display = 'block';
+  document.getElementById('noteTitle').value = note.title || '';
+  document.getElementById('noteContent').style.display = 'block';
+  document.getElementById('noteContent').value = note.content || '';
+  document.getElementById('noteActions').style.display = 'flex';
+  document.getElementById('noteEmpty').style.display = 'none';
+  renderNoteList();
+}
+
+function createNote() {
+  const id = Date.now().toString(36);
+  const notes = getNotes();
+  notes.unshift({ id, title: '', content: '', createdAt: new Date().toISOString() });
+  saveNotes(notes);
+  currentNoteId = id;
+  document.getElementById('noteTitle').style.display = 'block';
+  document.getElementById('noteTitle').value = '';
+  document.getElementById('noteContent').style.display = 'block';
+  document.getElementById('noteContent').value = '';
+  document.getElementById('noteActions').style.display = 'flex';
+  document.getElementById('noteEmpty').style.display = 'none';
+  renderNoteList();
+  document.getElementById('noteTitle').focus();
+}
+
+function saveCurrentNote() {
+  if (!currentNoteId) return;
+  const notes = getNotes();
+  const idx = notes.findIndex(n => n.id === currentNoteId);
+  if (idx === -1) return;
+  notes[idx].title = document.getElementById('noteTitle').value;
+  notes[idx].content = document.getElementById('noteContent').value;
+  notes[idx].updatedAt = new Date().toISOString();
+  saveNotes(notes);
+  renderNoteList();
+}
+
+function deleteCurrentNote() {
+  if (!currentNoteId) return;
+  if (!confirm('确定删除这条笔记吗？删除后不可恢复。')) return;
+  deleteNoteById(currentNoteId);
+}
+
+function deleteNoteById(id) {
+  if (!confirm('确定删除这条笔记吗？')) return;
+  let notes = getNotes();
+  notes = notes.filter(n => n.id !== id);
+  saveNotes(notes);
+  if (currentNoteId === id) {
+    currentNoteId = null;
+    document.getElementById('noteTitle').style.display = 'none';
+    document.getElementById('noteTitle').value = '';
+    document.getElementById('noteContent').style.display = 'none';
+    document.getElementById('noteContent').value = '';
+    document.getElementById('noteActions').style.display = 'none';
+    document.getElementById('noteEmpty').style.display = 'block';
+  }
+  renderNoteList();
+}
+
+// Auto-save on input
+document.getElementById('noteTitle').addEventListener('input', saveCurrentNote);
+document.getElementById('noteContent').addEventListener('input', saveCurrentNote);
+
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// ======================== AI CHAT ========================
+const CHAT_STORAGE = 'insurance_chat_history';
+const SYSTEM_PROMPT = `你是一位资深的保险产品经理专家，拥有 15 年以上保险行业经验。你精通：
+
+- 人身险（寿险、健康险、意外险、年金险）和财产险的产品设计
+- 保险条款解读与法律责任分析
+- 精算定价原理与费率设计
+- 核保核赔流程与风控规则
+- 中国银保监会监管政策与合规要求
+- 保险科技（InsurTech）与互联网保险创新
+- 保险产品对比分析与市场研究
+
+请用中文回答用户的问题。回答要求：
+- 专业准确，有数据支撑的给出数据
+- 结构清晰，善用分点和标题
+- 结合实际案例说明
+- 如涉及监管政策，注明政策出处
+- 如果问题超出保险领域，礼貌引导回保险话题`;
+
+// ==================== AGENT MANAGEMENT ====================
+const AGENT_STORAGE = 'insurance_agents';
+const DEFAULT_AGENTS = [
+  { id: 'default', name: '保险专家', icon: '🤖', systemPrompt: SYSTEM_PROMPT, isDefault: true }
+];
+
+function getAgents() {
+  try { return JSON.parse(localStorage.getItem(AGENT_STORAGE)) || DEFAULT_AGENTS; }
+  catch { return DEFAULT_AGENTS; }
+}
+function saveAgents(agents) { localStorage.setItem(AGENT_STORAGE, JSON.stringify(agents)); }
+
+function getCurrentAgent() {
+  const agents = getAgents();
+  const currentId = localStorage.getItem('current_agent') || 'default';
+  return agents.find(a => a.id === currentId) || agents[0];
+}
+
+function renderAgentSelect() {
+  const agents = getAgents();
+  const select = document.getElementById('agentSelect');
+  const currentId = localStorage.getItem('current_agent') || 'default';
+  select.innerHTML = agents.map(a => `<option value="${a.id}" ${a.id === currentId ? 'selected' : ''}>${a.icon || '🤖'} ${a.name}${a.isDefault ? '' : ''}</option>`).join('');
+}
+
+document.getElementById('agentSelect').addEventListener('change', function() {
+  localStorage.setItem('current_agent', this.value);
+  const agent = getAgents().find(a => a.id === this.value);
+  if (agent) updateWelcomeForAgent(agent);
+});
+
+document.getElementById('manageAgentsBtn').addEventListener('click', openAgentManager);
+
+function updateWelcomeForAgent(agent) {
+  const container = document.getElementById('chatMessages');
+  if (chatMessages.length > 0) return; // Only update if no messages
+  container.querySelector('.chat-welcome h3').textContent = agent.name;
+}
+
+function openAgentManager() {
+  const agents = getAgents();
+  const currentId = localStorage.getItem('current_agent') || 'default';
+
+  const agentCards = agents.map(a => `
+    <div class="agent-card ${a.id === currentId ? 'selected' : ''}">
+      <h5>${a.icon || '🤖'} ${a.name} ${a.isDefault ? '<span style="font-size:10px;color:#888;font-weight:400">（系统默认）</span>' : ''}</h5>
+      <div class="agent-prompt-preview">${escapeHtml(a.systemPrompt).substring(0, 120)}...</div>
+      <div class="agent-actions">
+        <button class="agent-action-btn" onclick="editAgent('${a.id}')">编辑</button>
+        ${!a.isDefault ? `<button class="agent-action-btn danger" onclick="deleteAgent('${a.id}')">删除</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('modalTitle').textContent = '🤖 Agent 管理';
+  document.getElementById('modalBody').innerHTML = `
+    <p style="font-size:12px;color:#888;margin-bottom:12px">自定义 AI 角色，每个 Agent 可以有独立的系统提示词</p>
+    <div class="agent-list">${agentCards}</div>
+    <div class="agent-form-btns" style="margin-top:16px">
+      <button class="btn btn-primary" onclick="showAgentForm()">+ 新建 Agent</button>
+    </div>
+    <div id="agentFormArea" style="display:none;margin-top:16px;border-top:1px solid #f0f0f0;padding-top:16px">
+      <div class="agent-form">
+        <input type="hidden" id="agentEditId">
+        <div><label>名称</label><input type="text" id="agentName" placeholder="如：条款解读专家"></div>
+        <div><label>图标 (emoji)</label><input type="text" id="agentIcon" placeholder="🤖"></div>
+        <div><label>系统提示词</label><textarea id="agentPrompt" placeholder="定义这个 AI 的角色和能力..."></textarea></div>
+        <div class="agent-form-btns">
+          <button class="btn btn-secondary" onclick="hideAgentForm()">取消</button>
+          <button class="btn btn-primary" onclick="saveAgent()">保存</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('overlay').classList.add('show');
+}
+
+function showAgentForm(editId) {
+  document.getElementById('agentFormArea').style.display = 'block';
+  if (editId) {
+    const agent = getAgents().find(a => a.id === editId);
+    if (agent) {
+      document.getElementById('agentEditId').value = agent.id;
+      document.getElementById('agentName').value = agent.name;
+      document.getElementById('agentIcon').value = agent.icon || '';
+      document.getElementById('agentPrompt').value = agent.systemPrompt;
+    }
+  } else {
+    document.getElementById('agentEditId').value = '';
+    document.getElementById('agentName').value = '';
+    document.getElementById('agentIcon').value = '';
+    document.getElementById('agentPrompt').value = '';
+  }
+}
+
+function hideAgentForm() {
+  document.getElementById('agentFormArea').style.display = 'none';
+}
+
+function editAgent(id) {
+  showAgentForm(id);
+}
+
+function saveAgent() {
+  const id = document.getElementById('agentEditId').value;
+  const name = document.getElementById('agentName').value.trim();
+  const icon = document.getElementById('agentIcon').value.trim() || '🤖';
+  const prompt = document.getElementById('agentPrompt').value.trim();
+
+  if (!name || !prompt) { alert('名称和系统提示词不能为空'); return; }
+
+  const agents = getAgents();
+  if (id) {
+    const idx = agents.findIndex(a => a.id === id);
+    if (idx >= 0) { agents[idx].name = name; agents[idx].icon = icon; agents[idx].systemPrompt = prompt; }
+  } else {
+    agents.push({ id: Date.now().toString(36), name, icon, systemPrompt: prompt, isDefault: false });
+  }
+
+  saveAgents(agents);
+  renderAgentSelect();
+  openAgentManager(); // Refresh modal
+}
+
+function deleteAgent(id) {
+  if (!confirm('确定删除此 Agent？')) return;
+  const agents = getAgents().filter(a => a.id !== id);
+  saveAgents(agents);
+  if (localStorage.getItem('current_agent') === id) {
+    localStorage.setItem('current_agent', 'default');
+  }
+  renderAgentSelect();
+  openAgentManager();
+}
+
+let chatMessages = [];
+
+function loadChatHistory() {
+  try { chatMessages = JSON.parse(localStorage.getItem(CHAT_STORAGE)) || []; }
+  catch { chatMessages = []; }
+}
+
+function saveChatHistory() {
+  localStorage.setItem(CHAT_STORAGE, JSON.stringify(chatMessages));
+}
+
+function loadApiConfig() {
+  const provider = localStorage.getItem('ai_provider') || 'dashscope';
+  const key = localStorage.getItem('ai_api_key') || 'sk-e1adbd8270ae414faf5c781be65c77fb';
+  document.getElementById('aiProvider').value = provider;
+  document.getElementById('aiApiKey').value = key;
+  updateSendButton();
+}
+
+function updateSendButton() {
+  const key = document.getElementById('aiApiKey').value.trim();
+  document.getElementById('sendChatBtn').disabled = !key;
+}
+
+document.getElementById('saveApiKey').addEventListener('click', () => {
+  const provider = document.getElementById('aiProvider').value;
+  const key = document.getElementById('aiApiKey').value.trim();
+  localStorage.setItem('ai_provider', provider);
+  localStorage.setItem('ai_api_key', key);
+  const hint = document.getElementById('configHint');
+  hint.textContent = '配置已保存';
+  hint.className = 'config-hint';
+  updateSendButton();
+  setTimeout(() => { hint.textContent = ''; }, 2000);
+});
+
+document.getElementById('aiApiKey').addEventListener('input', updateSendButton);
+
+document.getElementById('sendChatBtn').addEventListener('click', sendMessage);
+
+document.getElementById('chatInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+// Auto-resize textarea
+document.getElementById('chatInput').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
+document.getElementById('clearChatBtn').addEventListener('click', () => {
+  if (!confirm('确定清空全部对话记录？')) return;
+  chatMessages = [];
+  saveChatHistory();
+  renderChatMessages();
+});
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const apiKey = document.getElementById('aiApiKey').value.trim();
+  if (!apiKey) {
+    const hint = document.getElementById('configHint');
+    hint.textContent = '请先输入并保存 API Key';
+    hint.className = 'config-hint error';
+    return;
+  }
+
+  // Add user message
+  chatMessages.push({ role: 'user', content: text });
+  input.value = '';
+  input.style.height = 'auto';
+  saveChatHistory();
+  renderChatMessages();
+
+  // Disable send
+  document.getElementById('sendChatBtn').disabled = true;
+
+  // Add loading placeholder
+  chatMessages.push({ role: 'assistant', content: '', loading: true });
+  renderChatMessages();
+  scrollToBottom();
+
+  try {
+    const provider = document.getElementById('aiProvider').value;
+    let response;
+
+    if (provider === 'anthropic') {
+      response = await callAnthropicChat(apiKey);
+    } else if (provider === 'dashscope') {
+      response = await callDashScopeChat(apiKey);
+    } else {
+      response = await callOpenAIChat(apiKey);
+    }
+
+    // Replace loading message with real response
+    chatMessages.pop();
+    chatMessages.push({ role: 'assistant', content: response });
+    saveChatHistory();
+    renderChatMessages();
+    scrollToBottom();
+  } catch (err) {
+    chatMessages.pop();
+    chatMessages.push({ role: 'assistant', content: '抱歉，请求失败：' + err.message, error: true });
+    saveChatHistory();
+    renderChatMessages();
+  }
+
+  updateSendButton();
+}
+
+async function callAnthropicChat(apiKey) {
+  const messages = [];
+  const history = chatMessages.filter(m => !m.loading && !m.error).slice(-20);
+  for (const m of history) {
+    messages.push({ role: m.role, content: m.content });
+  }
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2048,
+      system: getCurrentAgent().systemPrompt,
+      messages
+    })
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(`Anthropic: ${res.status} ${errData.error?.message || res.statusText}`);
+  }
+
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+async function callOpenAIChat(apiKey) {
+  const messages = [{ role: 'system', content: getCurrentAgent().systemPrompt }];
+  const history = chatMessages.filter(m => !m.loading && !m.error).slice(-20);
+  for (const m of history) {
+    messages.push({ role: m.role, content: m.content });
+  }
+
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o',
+      max_tokens: 2048,
+      messages
+    })
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(`OpenAI: ${res.status} ${errData.error?.message || res.statusText}`);
+  }
+
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+async function callDashScopeChat(apiKey) {
+  const messages = [{ role: 'system', content: getCurrentAgent().systemPrompt }];
+  const history = chatMessages.filter(m => !m.loading && !m.error).slice(-20);
+  for (const m of history) {
+    messages.push({ role: m.role, content: m.content });
+  }
+
+  const res = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'qwen-plus',
+      max_tokens: 2048,
+      messages
+    })
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(`DashScope: ${res.status} ${errData.message || errData.error?.message || res.statusText}`);
+  }
+
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+function renderChatMessages() {
+  const container = document.getElementById('chatMessages');
+  if (chatMessages.length === 0) {
+    container.innerHTML = `
+      <div class="chat-welcome">
+        <div class="welcome-icon">🤖</div>
+        <h3>保险AI助手</h3>
+        <p>我是保险产品经理专属 AI 助手，可以帮你：</p>
+        <div class="welcome-tips">
+          <span>解读保险条款</span><span>分析产品方案</span><span>解释保险原理</span>
+          <span>对比产品差异</span><span>解答核保理赔问题</span><span>提供行业知识</span>
+        </div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = chatMessages.map((m, idx) => {
+    if (m.loading) {
+      return `<div class="chat-msg assistant msg-loading"><div class="msg-role">AI 助手</div><div class="msg-content">思考中</div></div>`;
+    }
+    const roleLabel = m.role === 'user' ? '你' : 'AI 助手';
+    const contentHtml = m.role === 'assistant' ? formatMarkdown(m.content) : escapeHtml(m.content);
+    const saveBtn = m.role === 'assistant' && !m.error
+      ? `<span class="save-note-btn" data-msgidx="${idx}" onclick="event.stopPropagation();saveToNotebook(this)">保存到笔记本</span>`
+      : '';
+    return `<div class="chat-msg ${m.role}"><div class="msg-role">${roleLabel}</div><div class="msg-content">${contentHtml}${saveBtn}</div></div>`;
+  }).join('');
+}
+
+function formatMarkdown(text) {
+  // Simple markdown-to-HTML conversion
+  let html = escapeHtml(text);
+  // Bold
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Headers
+  html = html.replace(/^### (.+)$/gm, '<h4 style="font-size:14px;color:#1e1e2f;margin:10px 0 4px">$1</h4>');
+  html = html.replace(/^## (.+)$/gm, '<h4 style="font-size:15px;color:#1e1e2f;margin:12px 0 4px">$1</h4>');
+  // Unordered lists
+  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+  // Ordered lists
+  html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+  // Double newline to paragraph breaks
+  html = html.replace(/\n\n+/g, '</p><p>');
+  html = '<p>' + html + '</p>';
+  // Clean up empty paragraphs
+  html = html.replace(/<p><\/p>/g, '');
+  html = html.replace(/<p>(<h4|<ul|<ol)/g, '$1');
+  html = html.replace(/(<\/h4>|<\/ul>|<\/ol>)<\/p>/g, '$1');
+  return html;
+}
+
+function scrollToBottom() {
+  const container = document.getElementById('chatMessages');
+  setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
+}
+
+function saveToNotebook(btn) {
+  const msgIdx = parseInt(btn.getAttribute('data-msgidx'));
+  const msg = chatMessages[msgIdx];
+  if (!msg || msg.role !== 'assistant') return;
+
+  // Get the user's question as title (find previous user message)
+  let title = '';
+  for (let i = msgIdx - 1; i >= 0; i--) {
+    if (chatMessages[i].role === 'user') {
+      title = chatMessages[i].content.substring(0, 50).replace(/\n/g, ' ');
+      break;
+    }
+  }
+  if (!title) title = 'AI 回复';
+
+  const id = Date.now().toString(36);
+  const notes = getNotes();
+  notes.unshift({
+    id,
+    title,
+    content: `【问题】${title}\n\n【AI 回复】\n${msg.content}`,
+    createdAt: new Date().toISOString()
+  });
+  saveNotes(notes);
+  renderNoteList();
+
+  // Flash feedback on the specific button
+  btn.textContent = '已保存!';
+  btn.style.color = '#4caf50';
+  btn.style.borderColor = '#4caf50';
+  setTimeout(() => {
+    btn.textContent = '保存到笔记本';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }, 1500);
+}
+
+// ======================== COVERAGE DISPLAY ========================
+const TYPE_LABELS = { pay: '给付型', reimburse: '报销型', allowance: '津贴型', service: '服务型', special: '特殊' };
+
+const coverageCategories = [
+  {
+    name: '身故与残疾类',
+    items: [
+      { name: '身故保险金', icon: '💀', type: 'pay', desc: '被保险人身故时一次性给付保险金。寿险/重疾险/意外险的核心责任。',
+        overview: '身故保险金是最基础的保险责任，几乎所有长期人身险产品都包含此责任。赔付条件为被保险人在保险期间内身故（通常排除故意自杀等免责情形）。',
+        terms: '• 等待期：寿险通常无等待期，重疾险90-180天\n• 自杀免责：合同生效2年内自杀不赔\n• 受益人：可由投保人指定（法定/指定）\n• 未成年人限额：<10岁≤20万，10-18岁≤50万（监管规定）\n• 与重疾责任互斥：多数重疾险身故与重疾仅赔其一',
+        products: [
+          { name: '华贵大麦定期寿险（旗舰版）', detail: '身故/全残赔付100%保额，最高300万。30岁男100万保至60岁，20年缴，年缴约1400元。健康告知仅3条，1-6类职业可投。' },
+          { name: '达尔文重疾险（旗舰版）', detail: '18岁前身故赔已缴保费，18岁后赔100%保额。身故与重疾互斥（先赔重疾则身故责任终止）。' }
+        ]
+      },
+      { name: '全残保险金', icon: '♿', type: 'pay', desc: '被保险人达到全残标准时一次性给付保险金，与身故保额通常等额。',
+        overview: '全残保险金在判断标准上比身故更复杂。各公司对"全残"的定义基本一致，参照行业标准（双目失明、双肢缺失、永久完全丧失生活自理能力等8项中的任意1项）。',
+        terms: '• 全残定义：行业标准8项（满足任意1项）\n• 赔付次数：1次（与身故互斥）\n• 等待期：寿险中通常无等待期\n• 与身故关系：全残先赔付后合同终止，身故不再赔付',
+        products: [
+          { name: '华贵大麦定期寿险', detail: '全残保险金与身故保险金等额。全残标准：双目永久失明、两上肢腕关节以上缺失、两下肢踝关节以上缺失、永久完全瘫痪等。' }
+        ]
+      },
+      { name: '意外身故保险金', icon: '🪦', type: 'pay', desc: '因意外伤害导致身故时，一次性给付保险金。意外险核心责任。',
+        overview: '意外身故的认定核心在于"意外"——必须是外来的、突发的、非本意的、非疾病的客观事件。猝死属于疾病范畴，不属于意外（需单独附加猝死责任才可赔付）。',
+        terms: '• 意外四要素：外来、突发、非本意、非疾病\n• 等待期：无（投保次日零时生效）\n• 保额：通常10万-100万\n• 猝死不赔：猝死属疾病，需额外附加猝死责任\n• 交通工具意外：通常额外叠加赔付（航空+500万等）',
+        products: [
+          { name: '平安大守护意外险', detail: '意外身故100万，交通意外额外赔付（航空+500万/火车+100万/汽车+50万），含猝死20万。1-3类职业，年保费298元。' }
+        ]
+      },
+      { name: '意外伤残保险金', icon: '🦴', type: 'pay', desc: '因意外事故致残，按伤残等级比例（10%-100%）给付保险金。',
+        overview: '伤残赔付依据《人身保险伤残评定标准》（2014版），共分10级281项。1级最重（如双下肢缺失），赔付100%保额；10级最轻（如单侧耳廓缺失≥50%），赔付10%保额。',
+        terms: '• 评定标准：《人身保险伤残评定标准》1-10级共281项\n• 赔付比例：1级100% → 每降1级减10% → 10级10%\n• 多处伤残：取最高等级；同部位多处按最高等级\n• 180天评定原则：治疗结束后180天内评定',
+        products: [
+          { name: '人保大金刚意外险', detail: '意外伤残按1-10级赔付10%-100%保额，最高100万。含意外医疗10万（0免赔100%赔付）。1-4类职业。年保费298元。' }
+        ]
+      },
+      { name: '猝死保险金', icon: '💔', type: 'pay', desc: '被保险人发生猝死时一次性给付。近年意外险附加的热门责任。',
+        overview: '猝死保险金因不属于意外（猝死是潜在疾病导致的突发死亡），在标准意外险中不赔。近年各保司将猝死责任作为附加项，成为意外险的"标配"卖点。猝死定义差异大（6h/24h/72h内），需仔细对比。',
+        terms: '• 猝死定义：突发疾病X小时内身故（6h/12h/24h/72h不等）\n• 保额：通常为意外保额的30%-50%，或固定金额20-100万\n• 等待期：通常无\n• 既往症：部分产品要求猝死需无相关既往病史',
+        products: [
+          { name: '太平洋孝心安意外险', detail: '猝死保额50万（突发疾病24h内身故），需无高血压/心脏病/脑中风既往病史。意外身故30万。50-80岁可投，年保费约200元。' }
+        ]
+      },
+      { name: '疾病终末期保险金', icon: '🕊️', type: 'pay', desc: '确诊疾病终末期（生命不足6个月）时提前给付保险金。',
+        overview: '疾病终末期保险金是对"将死未死"阶段的保障——当被保险人被确诊为疾病终末期，现有医疗技术无法缓解且预期存活期低于6个月时，提前给付。目前大多数重疾险已将"疾病终末期"列为重疾的一种。',
+        terms: '• 定义：现有医疗技术无法缓解，预期存活期低于6个月\n• 需两名及以上专科医生确诊\n• 赔付后合同终止\n• 部分产品不承保疾病终末期（仅重疾）\n• 通常与身故责任互斥',
+        products: [
+          { name: '国富人寿小红花重疾险', detail: '疾病终末期列为第121种重疾，赔付100%保额。需专科医生诊断，生命不足6个月。赔付后身故不再赔付。' }
+        ]
+      }
+    ]
+  },
+  {
+    name: '疾病类',
+    items: [
+      { name: '重大疾病保险金', icon: '🏥', type: 'pay', desc: '确诊合同约定的重大疾病后一次性给付保险金。重疾险最核心责任。',
+        overview: '2020年银保监会《重大疾病保险的疾病定义使用规范》统一定义28种重疾和3种轻症，覆盖重疾理赔95%以上。部分疾病需达特定状态（如严重脑中风后遗症要求180天后仍遗留障碍）或实施特定手术（如冠状动脉搭桥术需开胸）。',
+        terms: '• 统一定义：28种重疾（2020版），覆盖95%以上理赔\n• 赔付次数：单次/分组多次/不分组多次\n• 间隔期：多次重疾通常180-365天\n• 等待期：90-180天\n• 三同条款：同一原因/同次医疗/同次意外导致多重重疾仅赔一次',
+        products: [
+          { name: '达尔文重疾险（旗舰版）', detail: '120种重疾赔100%保额（1次）；60岁前首次确诊额外赔80%。30岁女50万保终身，30年缴，年缴约5500元。' },
+          { name: '超级玛丽重疾险', detail: '110种重疾不分组赔6次（间隔1年，每次递增20%）；60岁前首次额外赔100%。含心梗/脑中风二次赔付。' }
+        ]
+      },
+      { name: '中症疾病保险金', icon: '💊', type: 'pay', desc: '中症是介于轻症与重疾之间的疾病状态，赔付比例50%-60%保额。',
+        overview: '中症责任是近年重疾险的创新，填补了轻症和重疾之间的保障空白。目前无统一定义，由各保司自定义。常见中症包括：中度脑炎后遗症、中度溃疡性结肠炎、中度阿尔茨海默病、单侧肺切除等。',
+        terms: '• 无统一定义：各保司自定义\n• 赔付比例：50%-60%保额\n• 赔付次数：通常2-3次，不分组无间隔\n• 确诊即赔，不额外占用重疾额度',
+        products: [
+          { name: '达尔文重疾险（旗舰版）', detail: '25种中症赔50%保额，限2次（不分组无间隔）。含中度脑炎、中度帕金森等。' },
+          { name: '健康保普惠多倍版', detail: '25种中症赔60%保额，限2次。60岁前首次中症额外赔15%。' }
+        ]
+      },
+      { name: '轻症疾病保险金', icon: '🩹', type: 'pay', desc: '轻症是重疾的早期阶段，赔付后通常可豁免后续保费。',
+        overview: '轻症让重疾险更实用——早期发现疾病就能获得赔付。2020版规范统一定义3种轻症（恶性肿瘤-轻度、较轻急性心梗、轻度脑中风后遗症），赔付比例≤30%保额。非统一轻症各保司自行定义。',
+        terms: '• 统一定义3种：赔付比例≤30%（监管限制）\n• 其他轻症：通常30%，各保司自定义\n• 赔付次数：3-5次，不分组无间隔\n• 原位癌：通常含在轻症中（赔付30%，限1次）',
+        products: [
+          { name: '超级玛丽重疾险', detail: '50种轻症赔30%保额，限3次（不分组无间隔）。含原位癌、冠脉介入术、轻微脑中风等。' },
+          { name: '国富人寿小红花重疾险', detail: '40种轻症赔30%保额，限4次。60岁前首次轻症额外赔15%。' }
+        ]
+      },
+      { name: '恶性肿瘤多次赔付', icon: '🎗️', type: 'pay', desc: '首次确诊恶性肿瘤后，间隔一定时间后复发/转移/新发/持续可再获赔付。',
+        overview: '恶性肿瘤多次赔付是重疾险的进阶责任，解决癌症复发转移风险。注意间隔期（通常3年，部分产品缩短至1年）和覆盖范围（新发、复发、转移、持续四种状态是否都涵盖）。',
+        terms: '• 间隔期：通常3年（部分产品1年或180天）\n• 覆盖范围：新发/复发/转移/持续（好的产品四者全含）\n• 赔付次数：通常1-2次额外赔付\n• 赔付比例：100%-120%保额\n• 首次非癌→癌：部分产品间隔180天即可',
+        products: [
+          { name: '达尔文重疾险（旗舰版）', detail: '恶性肿瘤-重度二次赔付120%保额（限1次），间隔3年（新发/复发/转移/持续四者全含）。首次非癌→癌仅间隔180天。' }
+        ]
+      },
+      { name: '心脑血管特疾二次赔付', icon: '🫀', type: 'pay', desc: '特定心脑血管疾病复发时再次赔付，适用有心脑血管家族史人群。',
+        overview: '心脑血管疾病的复发率高于癌症，且复发后病情往往更重。该责任覆盖较重急性心梗、严重脑中风后遗症、冠状动脉搭桥术等特定心脑血管疾病的二次赔付。首次确诊后间隔1年（复发）或3年（新发）可再获赔付。',
+        terms: '• 覆盖病种：通常含较重急性心梗、严重脑中风后遗症、冠脉搭桥术\n• 间隔期：复发365天，新发180天-1年不等\n• 赔付比例：100%-120%保额\n• 附加费：一般额外保费8%-15%',
+        products: [
+          { name: '达尔文重疾险（旗舰版）', detail: '心脑血管特疾二次赔120%保额，间隔365天（复发）或180天（新发）。覆盖较重急性心梗、严重脑中风后遗症、冠脉搭桥术。30岁男附加约+600元/年。' }
+        ]
+      },
+      { name: '少儿/男女特定疾病额外给付', icon: '🎯', type: 'pay', desc: '针对少儿/男性/女性特定高发疾病在原重疾保额基础上额外给付。',
+        overview: '少儿特疾（白血病、严重手足口病、神经母细胞瘤等）、女性特疾（乳腺癌、宫颈癌、卵巢癌等）、男性特疾（前列腺癌、睾丸癌等）在重疾100%赔付基础上额外给付。少儿罕见病额外赔付比例更高（可达200%-300%）。',
+        terms: '• 少儿特疾：通常20种，额外赔100%-200%，限18/20岁前\n• 女性特疾：通常8-10种，额外赔50%-100%\n• 男性特疾：通常8-10种，额外赔50%-100%\n• 罕见病：通常5-10种，额外赔200%',
+        products: [
+          { name: '妈咪宝贝少儿重疾险', detail: '20种少儿特疾额外赔100%（白血病、神经母细胞瘤等）；5种罕见病额外赔200%。0岁女50万保终身，20年缴，年缴约2800元。' }
+        ]
+      }
+    ]
+  },
+  {
+    name: '医疗报销类',
+    items: [
+      { name: '住院医疗保险金', icon: '🏨', type: 'reimburse', desc: '因疾病或意外住院的医疗费用报销。医疗险最核心责任。',
+        overview: '报销范围包括床位费、诊疗费、检查检验费、手术费、药品费等。分一般住院（通常1万免赔）和重疾住院（通常0免赔）。绝大多数百万医疗险不限社保目录（自费药、进口药均可报销）。',
+        terms: '• 一般住院：年度免赔额1万元（年度累计）\n• 重疾住院：0免赔\n• 医院：二级及以上公立医院普通部\n• 赔付比例：有社保100%，无社保60%-80%',
+        products: [
+          { name: '好医保长期医疗（旗舰版）', detail: '一般住院400万（免赔1万）+ 重疾住院400万（0免赔），不限社保，100%赔付。保证续保20年。30岁有社保年缴约300元。' },
+          { name: '尊享e生百万医疗险', detail: '一般住院300万 + 重疾住院600万（0免赔）。含住院前后门急诊（前7后30天）、特殊门诊、门诊手术。家庭单共享免赔额。' }
+        ]
+      },
+      { name: '特殊门诊医疗保险金', icon: '🩻', type: 'reimburse', desc: '门诊肾透析、门诊恶性肿瘤治疗、器官移植后抗排异等特殊门诊费用报销。',
+        overview: '特殊门诊覆盖的是不需要住院但治疗费用高昂的门诊治疗，包括门诊肾透析（尿毒症患者每周3次终身治疗）、门诊恶性肿瘤治疗（放疗/化疗/免疫/靶向/内分泌治疗）、器官移植术后抗排异治疗。',
+        terms: '• 门诊肾透析：终身治疗，费用极高（年约10万+）\n• 门诊恶性肿瘤治疗：含放疗/化疗/免疫/靶向/内分泌治疗\n• 器官移植术后抗排异：需终身服药\n• 通常0免赔，100%赔付\n• 包含在百万医疗险中（非独立责任）',
+        products: [
+          { name: '尊享e生百万医疗险', detail: '特殊门诊含门诊肾透析、门诊恶性肿瘤治疗（化疗/放疗/免疫/靶向/内分泌）、器官移植术后抗排异。与住院共享300万/600万保额，0免赔。' }
+        ]
+      },
+      { name: '门诊手术医疗保险金', icon: '🔪', type: 'reimburse', desc: '无需住院、在门诊即可完成的手术费用报销。如脂肪瘤切除、痔疮手术等。',
+        overview: '门诊手术是指不需要住院、在门诊手术室即可完成的手术，如体表肿物切除、痔疮手术、包皮环切、白内障手术等。百万医疗险通常将此含在保障范围内，共享一般住院保额。',
+        terms: '• 手术类型：体表肿物切除、痔疮手术、白内障手术等\n• 保额：与一般住院共享额度（100-600万）\n• 免赔额：计入年度免赔额（1万）\n• 需在定点医院开展的门诊手术',
+        products: [
+          { name: '好医保长期医疗', detail: '门诊手术费纳入一般住院医疗保险金范围，共享400万保额，计入1万年度免赔额。覆盖二级及以上公立医院普通部门诊手术。' }
+        ]
+      },
+      { name: '住院前后门急诊医疗保险金', icon: '🚪', type: 'reimburse', desc: '住院前后一定天数内的门急诊费用报销，如住院前检查费、出院后复查费。',
+        overview: '住院前后的门诊检查、出院后复查等费用，如不在保障范围内则需自费。好的医疗险覆盖住院前7-30天和出院后7-30天的门急诊费用。',
+        terms: '• 覆盖天数：前7-30天 + 后7-30天（越长越好）\n• 原因：与住院相同原因的诊疗\n• 与住院共享额度\n• 计入年度免赔额',
+        products: [
+          { name: '尊享e生百万医疗险', detail: '住院前7天 + 出院后30天门急诊费用报销，需与住院原因相同。与一般住院共享300万保额。' },
+          { name: '好医保长期医疗', detail: '住院前30天 + 出院后30天门急诊费用报销。同原因诊疗，共享保额。是目前市面上门急诊覆盖天数最长的产品之一。' }
+        ]
+      },
+      { name: '意外医疗保险金', icon: '🤕', type: 'reimburse', desc: '因意外受伤产生的门急诊、住院医疗费用报销，通常0免赔。',
+        overview: '意外医疗是意外险中使用频率最高的责任——磕碰、摔伤、猫抓狗咬等意外的治疗费用报销。通常在意外险中附带，或可单独购买。好的意外医疗不限社保目录（自费药可报）。',
+        terms: '• 保额：通常1万-10万\n• 免赔额：通常0-100元\n• 赔付比例：90%-100%\n• 不限社保：部分产品自费药可报\n• 等待期：无（意外次日零时生效）\n• 医院：二级及以上公立医院',
+        products: [
+          { name: '平安大守护意外险', detail: '意外医疗5万保额，0免赔，100%赔付，不限社保目录（自费药可报）。含意外住院津贴100元/天。年保费298元。' },
+          { name: '美亚乐享百万意外险', detail: '意外医疗10万（0免赔100%赔付），不限社保，含自费药。意外住院津贴200元/天（免赔3天）。年保费约300元。' }
+        ]
+      },
+      { name: '质子重离子医疗保险金', icon: '⚛️', type: 'reimburse', desc: '恶性肿瘤的质子重离子治疗费用报销。高端放疗技术保障。',
+        overview: '质子重离子治疗是国际公认的先进肿瘤放疗技术，对特定部位肿瘤效果显著且对正常组织损伤小。国内仅上海质子重离子医院等少数机构可提供，单疗程约30万，因此单独列作保障责任。',
+        terms: '• 保额：100万-600万\n• 赔付比例：100%\n• 0免赔\n• 床位费限额：通常1500元/天\n• 医院：指定特定机构（上海质子重离子医院为主）',
+        products: [
+          { name: '好医保长期医疗', detail: '质子重离子100万，0免赔，100%赔付。限上海质子重离子医院。床位费限1500元/天。等待期30天。' },
+          { name: '尊享e生百万医疗险', detail: '质子重离子600万（与重疾医疗共享），0免赔100%赔付。指定上海质子重离子医院、山东淄博万杰肿瘤医院等。' }
+        ]
+      },
+      { name: '院外特药医疗保险金', icon: '💉', type: 'reimburse', desc: '医生处方但院内无药，需去院外药房购买的靶向药/免疫药等费用报销。',
+        overview: '解决"院内无药"痛点——昂贵靶向药、免疫药在医院药房缺货，需凭处方去院外DTP药房购买。如无此责任，几十万的药费需自付。通常提供药品清单（100-163种），限定药品和适应症。',
+        terms: '• 药品范围：100-163种（靶向药、免疫药为主，含CAR-T）\n• 需医生处方 + 适应症匹配\n• 指定药房购药\n• 报销比例：100%，0免赔',
+        products: [
+          { name: '尊享e生百万医疗险', detail: '院外特药163种（含CAR-T 2种），0免赔100%赔付。药品直付（无需垫付），冷链配送上门。清单每季度更新。' },
+          { name: '好医保长期医疗', detail: '院外特药100万保额，100+种药品含CAR-T。100%赔付，药品直付+配送上门。' }
+        ]
+      }
+    ]
+  },
+  {
+    name: '津贴类',
+    items: [
+      { name: '住院津贴', icon: '💰', type: 'allowance', desc: '按实际住院天数给付固定日额，与费用报销独立，可叠加赔付。',
+        overview: '住院津贴是对医疗费用报销的补充——按住院天数计算并给付固定金额，与费用报销不冲突。用于补偿住院期间的收入损失、伙食费、护理费等间接费用。',
+        terms: '• 日额：100-500元/天\n• 免赔天数：通常3天（前3天不给付）\n• 单次最高：90天\n• 年度最高：180天\n• 重疾住院/ICU：部分产品翻倍给付',
+        products: [
+          { name: '平安住院津贴险', detail: '一般住院200元/天（免赔3天），单次最高90天，年度最高180天。重疾住院400元/天（无免赔）。ICU 600元/天。年保费约150元。' },
+          { name: '人保住院万元护', detail: '一般住院100元/天（免赔3天），意外住院200元/天（无免赔）。单次最高60天，年度最高120天。' }
+        ]
+      },
+      { name: '重症监护室（ICU）津贴', icon: '🫁', type: 'allowance', desc: '因病情危重入住ICU期间的每日津贴，日额通常为普通住院津贴的2-3倍。',
+        overview: 'ICU费用极高（日均5000-10000元），ICU津贴可在普通住院津贴之外额外给付，帮助缓解经济压力。部分产品中ICU津贴与重疾住院津贴合并计算。',
+        terms: '• 日额：300-1000元/天\n• 免赔天数：部分产品无免赔\n• 单次最高天数：通常30-60天\n• 年度最高：通常60-180天',
+        products: [
+          { name: '平安住院津贴险', detail: 'ICU住院津贴600元/天（无免赔天数），单次最高30天，年度最高60天。要求入住ICU并接受积极治疗。' }
+        ]
+      },
+      { name: '意外住院津贴', icon: '🛏️', type: 'allowance', desc: '因意外伤害住院治疗期间按日给付津贴，通常无免赔天数。',
+        overview: '意外住院津贴与普通住院津贴的主要区别在于：意外导致的住院通常无免赔天数（住院第1天起即可赔付），而疾病住院津贴通常有3天免赔。部分产品意外住院津贴与普通住院津贴共用额度。',
+        terms: '• 日额：100-300元/天\n• 免赔天数：通常无（意外住院第1天起赔）\n• 单次最高：通常90天\n• 年度最高：通常180天',
+        products: [
+          { name: '人保大金刚意外险', detail: '意外住院津贴200元/天（无免赔天数），单次最高90天，年度最高180天。含骨折津贴（一次性给付500元）。' }
+        ]
+      }
+    ]
+  },
+  {
+    name: '其他保障',
+    items: [
+      { name: '保费豁免', icon: '🎗️', type: 'special', desc: '投保人或被保险人发生约定情形后无需再缴保费，保障继续有效。',
+        overview: '当被保险人患轻症/中症/重疾，或投保人患重疾/身故/全残时，后续保费全部免缴，保障不受影响。被保险人豁免通常产品自带，投保人豁免需额外附加（保费增加5%-15%）。',
+        terms: '• 被保险人豁免：患轻症/中症/重疾触发（产品自带）\n• 投保人豁免：需额外附加（保费+5%-15%）\n• 触发条件：轻症/中症/重疾/全残/身故\n• 豁免后保障不变',
+        products: [
+          { name: '达尔文重疾险（旗舰版）', detail: '自带被保险人轻症/中症/重疾豁免。投保人豁免可选附加（+约8%保费），触发条件：重疾/中症/轻症/身故/全残。' },
+          { name: '妈咪宝贝少儿重疾险', detail: '自带被保险人豁免。附加投保人豁免（父母）：患重疾/中症/轻症/身故/全残→豁免剩余保费，孩子保障不受影响。' }
+        ]
+      },
+      { name: '年金给付', icon: '📅', type: 'pay', desc: '约定年龄起定期（年/月）给付年金。养老年金险的核心责任。',
+        overview: '年金险解决"长寿风险"——活得太久、积蓄不够。投保人缴费后，在约定年龄（55/60/65岁）开始按年/月领取。保证领取期（通常20-25年）是重要条款，期间身故由受益人继承剩余年金。',
+        terms: '• 领取年龄：55/60/65岁\n• 领取频率：年领/月领（月领=年领×8.5%）\n• 保证领取期：20-25年\n• 方式：定额/增额（逐年递增3%-5%）\n• 万能账户：部分产品可附加（保底利率2%-3%）',
+        products: [
+          { name: '招商信诺自在人生养老金', detail: '投保年龄30天-55岁。缴费至55/60/65岁。领取年龄55/60/65岁。保证领取20年。30岁女月缴1000元缴至60岁，60岁起预计年领约3.5万。' },
+          { name: '泰康岁月有约养老年金', detail: '保证领取25年，可附加万能账户（保底利率3%）。30岁男年缴1万缴20年，60岁起预计年领约2.3万。' }
+        ]
+      },
+      { name: '满期生存保险金', icon: '🎉', type: 'pay', desc: '保险期满时被保险人仍生存，给付满期金。两全保险的核心责任。',
+        overview: '满期生存保险金是两全保险（生死两全）的核心——期满时被保险人仍生存，给付约定金额（通常为已缴保费或保额的一定比例）。本质上是储蓄功能，保费远高于纯保障型产品。',
+        terms: '• 满期时间：通常20年/30年/保至60/70/80岁\n• 满期金：通常为已缴保费或保额的100%-120%\n• 与身故互斥：先领满期金合同终止，先领身故金同样终止\n• 保费远高于定期寿险（含储蓄成分）',
+        products: [
+          { name: '平安百万任我行', detail: '保30年，满期生存给付120%已缴保费。身故/全残赔付100万（交通意外300万）。30岁男10万保额，年缴约1800元。' }
+        ]
+      },
+      { name: '救护车费用保险金', icon: '🚑', type: 'reimburse', desc: '因保险事故使用救护车的费用报销，通常在意外险或医疗险中附带。',
+        overview: '救护车费用（通常500-2000元/次）在很多医疗险中不含，需单独关注。部分意外险将救护车费用作为附加保障。高端医疗险通常全额报销。',
+        terms: '• 保额：通常500-2000元/次\n• 年度次数限制：通常不限次数\n• 原因限制：仅限保险事故相关\n• 地面救护车：通常不覆盖空中救援',
+        products: [
+          { name: '平安大守护意外险', detail: '救护车费用1000元/次，年度不限次数。仅限因意外导致的救护车使用，报销范围覆盖地面救护车。' }
+        ]
+      },
+      { name: '增值服务', icon: '🌟', type: 'service', desc: '保障以外的非金钱服务，如就医绿通、在线问诊、第二诊疗意见、送药上门等。',
+        overview: '增值服务（VAS）是保险产品的差异化竞争点——不涉及金钱赔付，但能极大提升就医体验。包括：就医绿通（专家预约+住院/手术安排）、在线问诊（7×24小时图文/视频）、第二诊疗意见（国内外专家会诊）、送药上门、齿科服务、心理咨询等。',
+        terms: '• 就医绿通：覆盖三甲医院，承诺5-10个工作日安排\n• 在线问诊：通常不限次数\n• 第二诊疗意见：通常每年限1次\n• 使用条件：通常需确诊且为被保险人本人',
+        products: [
+          { name: '尊享e生百万医疗险', detail: '就医绿通（1000+家三甲医院，5工作日安排）；医疗垫付（83城市）；在线问诊不限次数；第二诊疗意见（每年1次）；送药上门（全国范围）。' },
+          { name: '好医保长期医疗', detail: '就医绿通（专家门诊+住院+手术安排）；医疗垫付（全国）；在线问诊7×24小时；第二诊疗意见（国内外专家）。' }
+        ]
+      }
+    ]
+  }
+];
+
+function renderCoverages() {
+  const container = document.getElementById('coverageSections');
+  let html = '';
+  coverageCategories.forEach(cat => {
+    html += `<div class="coverage-section"><h3>${cat.name}<span class="cat-badge">${cat.items.length}项责任</span></h3>`;
+    cat.items.forEach((item, i) => {
+      html += `<div class="coverage-card" onclick="openCoverageModal('${cat.name}', ${i})">
+        <div class="cov-icon">${item.icon}</div>
+        <div class="cov-info"><h4>${item.name}</h4><div class="cov-desc">${item.desc}</div></div>
+        <div class="cov-right">
+          <span class="cov-type-badge ${item.type}">${TYPE_LABELS[item.type]}</span>
+          <span class="cov-arrow">→</span>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function openCoverageModal(catName, idx) {
+  const cat = coverageCategories.find(c => c.name === catName);
+  const item = cat.items[idx];
+  document.getElementById('modalTitle').textContent = item.icon + ' ' + item.name;
+
+  const productCards = item.products.map(p => `
+    <div class="product-card">
+      <h5>示例产品：${p.name}</h5>
+      <div class="prod-detail">${p.detail}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <span class="cov-type-badge ${item.type}" style="font-size:12px;padding:4px 14px">${TYPE_LABELS[item.type]}</span>
+      <span style="font-size:12px;color:#888">${item.desc}</span>
+    </div>
+    <h4>责任概述</h4>
+    <div class="desc-text">${item.overview}</div>
+    <h4>典型条款</h4>
+    <div class="desc-text" style="white-space:pre-line">${item.terms}</div>
+    <h4>示例产品（${item.products.length}个）</h4>
+    ${productCards}
+  `;
+  document.getElementById('overlay').classList.add('show');
+}
+
+// ======================== INIT ========================
+renderFileTypes();
+renderCoverages();
+renderNoteList();
+loadChatHistory();
+loadApiConfig();
+renderAgentSelect();
+renderChatMessages();
+</script>
+</body>
+</html>
