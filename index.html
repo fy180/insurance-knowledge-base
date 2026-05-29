@@ -38,6 +38,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft
 .note-item .note-del:hover { opacity: 1; }
 .add-note-btn { margin: 4px 20px 8px 50px; padding: 5px 10px; font-size: 11px; color: #7c6ff7; background: rgba(124,111,247,0.08); border: 1px dashed rgba(124,111,247,0.3); border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.15s; }
 .add-note-btn:hover { background: rgba(124,111,247,0.15); }
+.upload-note-btn { margin: 4px 20px 2px 50px; padding: 5px 10px; font-size: 11px; color: #4caf50; background: rgba(76,175,80,0.08); border: 1px dashed rgba(76,175,80,0.3); border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.upload-note-btn:hover { background: rgba(76,175,80,0.15); }
+.upload-note-btn.processing { opacity: 0.6; pointer-events: none; }
+#noteUploadInput { display: none; }
 
 /* ========== Main ========== */
 .main { flex: 1; overflow-y: auto; padding: 30px; }
@@ -263,6 +267,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft
       <div class="nav-item" data-page="notebook"><span class="nav-icon">📒</span>保险笔记本</div>
       <div id="sidebarNoteList"></div>
       <div class="add-note-btn" id="sidebarAddNote">+ 新建笔记</div>
+      <div class="upload-note-btn" id="sidebarUploadNote" onclick="switchPage('notebook');document.getElementById('noteUploadInput').click()">📄 上传文件生成笔记</div>
     </div>
   </nav>
 </div>
@@ -500,7 +505,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft
       <div class="note-list-panel">
         <h3>笔记列表</h3>
         <div id="noteList"></div>
-        <button class="btn btn-primary" style="width:calc(100% - 32px);margin:8px 16px" onclick="createNote()">+ 新建笔记</button>
+        <button class="btn btn-primary" style="width:calc(100% - 32px);margin:8px 16px 4px" onclick="createNote()">+ 新建笔记</button>
+        <button class="btn btn-secondary" style="width:calc(100% - 32px);margin:4px 16px 8px;font-size:12px" onclick="document.getElementById('noteUploadInput').click()">📄 上传文件生成笔记</button>
       </div>
       <div class="note-editor" id="noteEditor">
         <div class="note-empty" id="noteEmpty">选择一条笔记，或点击「新建笔记」开始记录</div>
@@ -513,6 +519,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft
       </div>
     </div>
   </div>
+
+  <!-- Hidden file input for uploading documents to generate notes -->
+  <input type="file" id="noteUploadInput" accept=".txt,.md,.json,.csv,.html,.xml" onchange="handleNoteFileUpload(event)">
 
 </div>
 
@@ -768,6 +777,110 @@ function deleteNoteById(id) {
 // Auto-save on input
 document.getElementById('noteTitle').addEventListener('input', saveCurrentNote);
 document.getElementById('noteContent').addEventListener('input', saveCurrentNote);
+
+// ==================== File Upload to Generate Notes ====================
+async function handleNoteFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Reset input so same file can be re-selected
+  event.target.value = '';
+
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  if (file.size > maxSize) {
+    alert('文件过大，请选择 5MB 以内的文件');
+    return;
+  }
+
+  // Update sidebar upload button state
+  const sidebarBtn = document.getElementById('sidebarUploadNote');
+  if (sidebarBtn) {
+    sidebarBtn.classList.add('processing');
+    sidebarBtn.innerHTML = '⏳ 正在分析...';
+  }
+
+  logThinking('📄 读取文件: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)', 'info');
+
+  try {
+    // Read file content
+    const fileContent = await readFileContent(file);
+    logThinking('✅ 文件读取成功，共 ' + fileContent.length + ' 字符', 'step');
+
+    // Get AI config
+    const provider = document.getElementById('aiProvider').value;
+    const apiKey = document.getElementById('aiApiKey').value.trim();
+    if (!apiKey) {
+      alert('请先在 AI 助手中配置 API Key');
+      resetUploadButton();
+      return;
+    }
+
+    // Create a temporary note to show processing state
+    const tempId = 'processing_' + Date.now().toString(36);
+    const notes = getNotes();
+    notes.unshift({ id: tempId, title: '分析中: ' + file.name, content: 'AI 正在分析文件内容...', createdAt: new Date().toISOString() });
+    currentNoteId = tempId;
+    saveNotes(notes);
+    renderNoteList();
+    document.getElementById('noteTitle').style.display = 'block';
+    document.getElementById('noteTitle').value = '分析中: ' + file.name;
+    document.getElementById('noteContent').style.display = 'block';
+    document.getElementById('noteContent').value = 'AI 正在分析文件内容...';
+    document.getElementById('noteActions').style.display = 'flex';
+    document.getElementById('noteEmpty').style.display = 'none';
+
+    // Build prompt for AI
+    const analysisPrompt = '你是一位资深的保险产品经理。请仔细阅读以下文件内容，生成一份结构化的保险学习笔记。\n\n要求：\n1. 标题用 "# 笔记标题" 格式，根据文件内容提炼合适的标题\n2. 用 ## 分段，清晰整理要点\n3. 关键术语加粗\n4. 如有数据或案例，单独列出\n5. 在末尾添加 "---\n自动生成于 ' + new Date().toLocaleDateString() + ' | 来源: ' + file.name + '"\n\n文件内容如下：\n\n' + fileContent.substring(0, 15000);
+
+    logThinking('🤖 调用 AI 分析文件内容...', 'step');
+
+    const messages = [{ role: 'user', content: analysisPrompt }];
+    const systemPrompt = '你是一位资深的保险产品经理专家。你擅长从文档中提取关键信息并整理成结构化的学习笔记。';
+    const response = await callAIWithProvider(provider, apiKey, messages, systemPrompt);
+
+    logThinking('✅ AI 分析完成，生成笔记 (' + response.length + ' 字)', 'done');
+
+    // Update the temp note with AI response
+    const updatedNotes = getNotes();
+    const idx = updatedNotes.findIndex(function(n) { return n.id === tempId; });
+    if (idx !== -1) {
+      updatedNotes[idx].content = response;
+      // Extract title from first # heading
+      const titleMatch = response.match(/^#\s+(.+)/m);
+      updatedNotes[idx].title = titleMatch ? titleMatch[1] : ('笔记: ' + file.name);
+      updatedNotes[idx].updatedAt = new Date().toISOString();
+      saveNotes(updatedNotes);
+      renderNoteList();
+      document.getElementById('noteTitle').value = updatedNotes[idx].title;
+      document.getElementById('noteContent').value = updatedNotes[idx].content;
+    }
+
+    logThinking('📝 笔记已保存到笔记本', 'done');
+  } catch (err) {
+    logThinking('❌ 文件处理失败: ' + err.message, 'error');
+    alert('文件处理失败: ' + err.message);
+  } finally {
+    resetUploadButton();
+  }
+}
+
+function readFileContent(file) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() { resolve(reader.result); };
+    reader.onerror = function() { reject(new Error('文件读取失败')); };
+    // Read as text — works for .txt, .md, .json, .csv, .html, .xml
+    reader.readAsText(file, 'UTF-8');
+  });
+}
+
+function resetUploadButton() {
+  const sidebarBtn = document.getElementById('sidebarUploadNote');
+  if (sidebarBtn) {
+    sidebarBtn.classList.remove('processing');
+    sidebarBtn.innerHTML = '📄 上传文件生成笔记';
+  }
+}
 
 function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
