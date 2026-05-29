@@ -106,12 +106,48 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft
 .note-list-item.active { background: #f0edff; color: #7c6ff7; border-left-color: #7c6ff7; }
 .note-list-item .n-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .note-list-item .n-date { font-size: 10px; color: #aaa; margin-left: 8px; flex-shrink: 0; }
-.note-editor { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+.note-editor { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .note-editor input { padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 15px; outline: none; }
 .note-editor input:focus { border-color: #7c6ff7; }
-.note-editor textarea { flex: 1; padding: 12px 14px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; line-height: 1.7; outline: none; resize: none; font-family: inherit; }
-.note-editor textarea:focus { border-color: #7c6ff7; }
-.note-actions { display: flex; gap: 8px; }
+.note-actions { display: flex; gap: 8px; align-items: center; }
+.note-mode-toggle { margin-left: auto; display: flex; gap: 2px; background: #f0f0f5; border-radius: 6px; padding: 2px; }
+.note-mode-toggle button { padding: 4px 12px; border: none; border-radius: 5px; font-size: 11px; cursor: pointer; background: transparent; color: #888; transition: all 0.15s; }
+.note-mode-toggle button.active { background: #fff; color: #7c6ff7; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+/* Formatting toolbar */
+.note-toolbar { display: flex; gap: 2px; padding: 6px 8px; background: #f8f8fc; border-radius: 8px; flex-wrap: wrap; align-items: center; }
+.note-toolbar button { width: 28px; height: 26px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; background: transparent; color: #555; transition: all 0.12s; display: flex; align-items: center; justify-content: center; }
+.note-toolbar button:hover { background: #e8e8f0; color: #7c6ff7; }
+.note-toolbar button.active { background: #e0dff5; color: #7c6ff7; }
+.note-toolbar .tb-sep { width: 1px; height: 18px; background: #ddd; margin: 0 4px; }
+/* Content editor */
+.note-content-wrap { flex: 1; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px; min-height: 300px; }
+.note-content-wrap:focus-within { border-color: #7c6ff7; }
+.note-content-edit { padding: 16px 18px; font-size: 13px; line-height: 1.8; outline: none; min-height: 100%; color: #333; }
+.note-content-edit:empty::before { content: '在此记录你的笔记...'; color: #aaa; }
+/* Visual note rendered view */
+.note-content-view { padding: 20px 24px; font-size: 13px; line-height: 1.8; color: #333; }
+.note-content-view h1 { font-size: 22px; color: #1e1e2f; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 2px solid #7c6ff7; }
+.note-content-view h2 { font-size: 17px; color: #1e1e2f; margin: 24px 0 10px; padding-left: 10px; border-left: 3px solid #7c6ff7; }
+.note-content-view h3 { font-size: 14px; color: #444; margin: 18px 0 8px; }
+.note-content-view strong { color: #7c6ff7; }
+.note-content-view ul, .note-content-view ol { margin: 8px 0 8px 20px; }
+.note-content-view li { margin-bottom: 4px; }
+.note-content-view table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
+.note-content-view table th { background: #7c6ff7; color: #fff; padding: 8px 12px; text-align: left; font-weight: 500; }
+.note-content-view table td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+.note-content-view table tr:nth-child(even) td { background: #fafafa; }
+.note-content-view .note-card { background: linear-gradient(135deg, #f0edff, #faf8ff); border-radius: 10px; padding: 16px 20px; margin: 14px 0; border-left: 4px solid #7c6ff7; }
+.note-content-view .note-card.green { background: linear-gradient(135deg, #e8f5e9, #f1f8f2); border-left-color: #4caf50; }
+.note-content-view .note-card.orange { background: linear-gradient(135deg, #fff3e0, #fffaf5); border-left-color: #ff9800; }
+.note-content-view .note-card.red { background: linear-gradient(135deg, #ffebee, #fff5f5); border-left-color: #e74c3c; }
+.note-content-view .note-highlight { background: #fff9c4; padding: 2px 6px; border-radius: 3px; font-weight: 500; }
+.note-content-view .note-tag { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; margin: 2px 4px; }
+.note-content-view .note-tag.purple { background: #f0edff; color: #7c6ff7; }
+.note-content-view .note-tag.green { background: #e8f5e9; color: #388e3c; }
+.note-content-view .note-tag.blue { background: #e3f2fd; color: #1976d2; }
+.note-content-view hr { border: none; border-top: 1px dashed #ddd; margin: 20px 0; }
+.note-content-view blockquote { border-left: 3px solid #ddd; padding: 8px 16px; margin: 12px 0; color: #666; background: #fafafa; border-radius: 0 6px 6px 0; }
+.note-content-view .note-meta { font-size: 11px; color: #aaa; margin-top: 24px; padding-top: 12px; border-top: 1px solid #eee; }
 .btn { padding: 8px 18px; border-radius: 8px; font-size: 13px; cursor: pointer; border: none; transition: all 0.15s; }
 .btn-primary { background: #7c6ff7; color: #fff; }
 .btn-primary:hover { background: #5c55a8; }
@@ -511,10 +547,38 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft
       <div class="note-editor" id="noteEditor">
         <div class="note-empty" id="noteEmpty">选择一条笔记，或点击「新建笔记」开始记录</div>
         <input type="text" id="noteTitle" placeholder="笔记标题..." style="display:none">
-        <textarea id="noteContent" placeholder="在此记录你的笔记..." style="display:none"></textarea>
+        <div class="note-toolbar" id="noteToolbar" style="display:none">
+          <button title="标题" onclick="execNoteCmd('formatBlock','h2')">H2</button>
+          <button title="小标题" onclick="execNoteCmd('formatBlock','h3')">H3</button>
+          <span class="tb-sep"></span>
+          <button title="加粗" onclick="execNoteCmd('bold')"><b>B</b></button>
+          <button title="高亮标记" onclick="insertNoteHighlight()">◆</button>
+          <span class="tb-sep"></span>
+          <button title="无序列表" onclick="execNoteCmd('insertUnorderedList')">•≡</button>
+          <button title="有序列表" onclick="execNoteCmd('insertOrderedList')">1≡</button>
+          <button title="引用块" onclick="execNoteCmd('formatBlock','blockquote')">"</button>
+          <span class="tb-sep"></span>
+          <button title="信息卡片" onclick="insertNoteCard('purple')">▣</button>
+          <button title="绿色卡片" onclick="insertNoteCard('green')" style="color:#4caf50">▣</button>
+          <button title="橙色卡片" onclick="insertNoteCard('orange')" style="color:#ff9800">▣</button>
+          <span class="tb-sep"></span>
+          <button title="插入表格" onclick="insertNoteTable()">⊞</button>
+          <button title="分割线" onclick="execNoteCmd('insertHorizontalRule')">—</button>
+          <button title="插入标签" onclick="insertNoteTag()">#</button>
+          <span class="tb-sep"></span>
+          <button title="清除格式" onclick="execNoteCmd('removeFormat')" style="color:#e74c3c">✕</button>
+        </div>
+        <div class="note-content-wrap" id="noteContentWrap" style="display:none">
+          <div class="note-content-view" id="noteContentView" style="display:none"></div>
+          <div class="note-content-edit" id="noteContentEdit" contenteditable="true" style="display:none"></div>
+        </div>
         <div class="note-actions" id="noteActions" style="display:none">
           <button class="btn btn-primary" onclick="saveCurrentNote()">保存</button>
           <button class="btn btn-danger" onclick="deleteCurrentNote()">删除</button>
+          <div class="note-mode-toggle" id="noteModeToggle">
+            <button id="modeBtnEdit" class="active" onclick="switchNoteMode('edit')">编辑</button>
+            <button id="modeBtnView" onclick="switchNoteMode('view')">预览</button>
+          </div>
         </div>
       </div>
     </div>
@@ -687,6 +751,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 // ======================== NOTEBOOK ========================
 const STORAGE_KEY = 'insurance_notes';
 let currentNoteId = null;
+let currentNoteMode = 'edit'; // 'edit' | 'view'
 
 function getNotes() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
@@ -701,7 +766,7 @@ function renderNoteList() {
 
   const html = notes.map(n => `
     <div class="note-item ${n.id === currentNoteId ? 'active' : ''}" onclick="switchPage('notebook');selectNote('${n.id}')">
-      <span class="note-title">${escapeHtml(n.title || '无标题')}</span>
+      <span class="note-title">${escapeHtml(stripHtml(n.title) || '无标题')}</span>
       <span class="note-del" onclick="event.stopPropagation();deleteNoteById('${n.id}')">×</span>
     </div>`).join('');
 
@@ -709,17 +774,69 @@ function renderNoteList() {
   panelList.innerHTML = notes.length ? html : '<div class="note-empty" style="padding:20px;font-size:12px">暂无笔记</div>';
 }
 
+function showNoteEditor() {
+  document.getElementById('noteTitle').style.display = 'block';
+  document.getElementById('noteToolbar').style.display = 'flex';
+  document.getElementById('noteContentWrap').style.display = 'block';
+  document.getElementById('noteActions').style.display = 'flex';
+  document.getElementById('noteEmpty').style.display = 'none';
+}
+
+function hideNoteEditor() {
+  document.getElementById('noteTitle').style.display = 'none';
+  document.getElementById('noteTitle').value = '';
+  document.getElementById('noteToolbar').style.display = 'none';
+  document.getElementById('noteContentWrap').style.display = 'none';
+  document.getElementById('noteContentEdit').style.display = 'none';
+  document.getElementById('noteContentView').style.display = 'none';
+  document.getElementById('noteActions').style.display = 'none';
+  document.getElementById('noteEmpty').style.display = 'block';
+}
+
+function switchNoteMode(mode) {
+  currentNoteMode = mode;
+  const editDiv = document.getElementById('noteContentEdit');
+  const viewDiv = document.getElementById('noteContentView');
+  const editBtn = document.getElementById('modeBtnEdit');
+  const viewBtn = document.getElementById('modeBtnView');
+  const toolbar = document.getElementById('noteToolbar');
+
+  if (mode === 'edit') {
+    // Sync content from view to editor if switching from view
+    if (viewDiv.style.display !== 'none') {
+      editDiv.innerHTML = viewDiv.innerHTML;
+    }
+    editDiv.style.display = 'block';
+    viewDiv.style.display = 'none';
+    toolbar.style.display = 'flex';
+    editBtn.classList.add('active');
+    viewBtn.classList.remove('active');
+  } else {
+    // Render HTML in view mode
+    viewDiv.innerHTML = editDiv.innerHTML;
+    viewDiv.style.display = 'block';
+    editDiv.style.display = 'none';
+    toolbar.style.display = 'none';
+    viewBtn.classList.add('active');
+    editBtn.classList.remove('active');
+  }
+}
+
 function selectNote(id) {
   const notes = getNotes();
   const note = notes.find(n => n.id === id);
   if (!note) return;
   currentNoteId = id;
-  document.getElementById('noteTitle').style.display = 'block';
+  showNoteEditor();
   document.getElementById('noteTitle').value = note.title || '';
-  document.getElementById('noteContent').style.display = 'block';
-  document.getElementById('noteContent').value = note.content || '';
-  document.getElementById('noteActions').style.display = 'flex';
-  document.getElementById('noteEmpty').style.display = 'none';
+  document.getElementById('noteContentEdit').innerHTML = note.content || '';
+  // Default to view mode for notes with HTML content, edit for plain text
+  if (note.content && /<[a-z][\s\S]*>/i.test(note.content)) {
+    switchNoteMode('view');
+  } else {
+    document.getElementById('noteContentEdit').textContent = note.content || '';
+    switchNoteMode('edit');
+  }
   renderNoteList();
 }
 
@@ -729,12 +846,10 @@ function createNote() {
   notes.unshift({ id, title: '', content: '', createdAt: new Date().toISOString() });
   saveNotes(notes);
   currentNoteId = id;
-  document.getElementById('noteTitle').style.display = 'block';
+  showNoteEditor();
   document.getElementById('noteTitle').value = '';
-  document.getElementById('noteContent').style.display = 'block';
-  document.getElementById('noteContent').value = '';
-  document.getElementById('noteActions').style.display = 'flex';
-  document.getElementById('noteEmpty').style.display = 'none';
+  document.getElementById('noteContentEdit').innerHTML = '';
+  switchNoteMode('edit');
   renderNoteList();
   document.getElementById('noteTitle').focus();
 }
@@ -744,8 +859,15 @@ function saveCurrentNote() {
   const notes = getNotes();
   const idx = notes.findIndex(n => n.id === currentNoteId);
   if (idx === -1) return;
+  // Save from current active view
+  var content;
+  if (currentNoteMode === 'view') {
+    content = document.getElementById('noteContentView').innerHTML;
+  } else {
+    content = document.getElementById('noteContentEdit').innerHTML;
+  }
   notes[idx].title = document.getElementById('noteTitle').value;
-  notes[idx].content = document.getElementById('noteContent').value;
+  notes[idx].content = content;
   notes[idx].updatedAt = new Date().toISOString();
   saveNotes(notes);
   renderNoteList();
@@ -764,35 +886,128 @@ function deleteNoteById(id) {
   saveNotes(notes);
   if (currentNoteId === id) {
     currentNoteId = null;
-    document.getElementById('noteTitle').style.display = 'none';
-    document.getElementById('noteTitle').value = '';
-    document.getElementById('noteContent').style.display = 'none';
-    document.getElementById('noteContent').value = '';
-    document.getElementById('noteActions').style.display = 'none';
-    document.getElementById('noteEmpty').style.display = 'block';
+    hideNoteEditor();
   }
   renderNoteList();
 }
 
+// ==================== Rich Text Toolbar Commands ====================
+function execNoteCmd(cmd, value) {
+  document.getElementById('noteContentEdit').focus();
+  document.execCommand(cmd, false, value || null);
+  // Ensure we're in edit mode
+  if (currentNoteMode !== 'edit') switchNoteMode('edit');
+}
+
+function insertNoteCard(color) {
+  if (currentNoteMode !== 'edit') switchNoteMode('edit');
+  var editDiv = document.getElementById('noteContentEdit');
+  editDiv.focus();
+  var card = document.createElement('div');
+  card.className = 'note-card' + (color && color !== 'purple' ? ' ' + color : '');
+  card.innerHTML = '<strong>卡片标题</strong><br>卡片内容...';
+  card.contentEditable = 'true';
+  // Insert HTML
+  var sel = window.getSelection();
+  var range = sel.getRangeAt(0);
+  range.deleteContents();
+  // Find insertion point
+  if (!editDiv.contains(range.commonAncestorContainer) && range.commonAncestorContainer !== editDiv) {
+    editDiv.appendChild(card);
+  } else {
+    range.insertNode(card);
+  }
+  // Move cursor inside the card
+  sel.selectAllChildren(card);
+  sel.collapseToEnd();
+  saveCurrentNote();
+}
+
+function insertNoteHighlight() {
+  if (currentNoteMode !== 'edit') switchNoteMode('edit');
+  var editDiv = document.getElementById('noteContentEdit');
+  editDiv.focus();
+  var sel = window.getSelection();
+  if (sel.rangeCount && !sel.isCollapsed) {
+    var range = sel.getRangeAt(0);
+    var span = document.createElement('span');
+    span.className = 'note-highlight';
+    try {
+      range.surroundContents(span);
+      sel.removeAllRanges();
+    } catch(e) {
+      // If surround fails, wrap selected text manually
+      var text = range.toString();
+      if (text) {
+        range.deleteContents();
+        span.textContent = text;
+        range.insertNode(span);
+      }
+    }
+    saveCurrentNote();
+  } else {
+    // No selection, just alert
+    alert('请先选中要高亮的文字');
+  }
+}
+
+function insertNoteTable() {
+  if (currentNoteMode !== 'edit') switchNoteMode('edit');
+  var editDiv = document.getElementById('noteContentEdit');
+  editDiv.focus();
+  var rows = prompt('请输入表格行数', '3');
+  var cols = prompt('请输入表格列数', '3');
+  if (!rows || !cols) return;
+  var r = parseInt(rows), c = parseInt(cols);
+  if (isNaN(r) || isNaN(c) || r < 1 || c < 1 || r > 10 || c > 8) { alert('请输入合理的行列数(行1-10, 列1-8)'); return; }
+  var html = '<table><thead><tr>';
+  for (var i = 0; i < c; i++) html += '<th>表头' + (i+1) + '</th>';
+  html += '</tr></thead><tbody>';
+  for (var i = 0; i < r - 1; i++) {
+    html += '<tr>';
+    for (var j = 0; j < c; j++) html += '<td>内容</td>';
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  document.execCommand('insertHTML', false, html);
+  saveCurrentNote();
+}
+
+function insertNoteTag() {
+  if (currentNoteMode !== 'edit') switchNoteMode('edit');
+  var tagName = prompt('请输入标签文字', '重要');
+  if (!tagName) return;
+  var colors = ['purple', 'green', 'blue'];
+  var color = colors[Math.floor(Math.random() * colors.length)];
+  var html = '<span class="note-tag ' + color + '" contenteditable="false">' + escapeHtml(tagName) + '</span>&nbsp;';
+  document.execCommand('insertHTML', false, html);
+  saveCurrentNote();
+}
+
 // Auto-save on input
 document.getElementById('noteTitle').addEventListener('input', saveCurrentNote);
-document.getElementById('noteContent').addEventListener('input', saveCurrentNote);
+document.getElementById('noteContentEdit').addEventListener('input', saveCurrentNote);
+
+// Handle paste to clean up MS Word garbage
+document.getElementById('noteContentEdit').addEventListener('paste', function(e) {
+  e.preventDefault();
+  var text = (e.clipboardData || window.clipboardData).getData('text/plain');
+  document.execCommand('insertHTML', false, text.replace(/\n/g, '<br>'));
+});
 
 // ==================== File Upload to Generate Notes ====================
 async function handleNoteFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  // Reset input so same file can be re-selected
   event.target.value = '';
 
-  const maxSize = 5 * 1024 * 1024; // 5MB
+  const maxSize = 5 * 1024 * 1024;
   if (file.size > maxSize) {
     alert('文件过大，请选择 5MB 以内的文件');
     return;
   }
 
-  // Update sidebar upload button state
   const sidebarBtn = document.getElementById('sidebarUploadNote');
   if (sidebarBtn) {
     sidebarBtn.classList.add('processing');
@@ -802,11 +1017,9 @@ async function handleNoteFileUpload(event) {
   logThinking('📄 读取文件: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)', 'info');
 
   try {
-    // Read file content
     const fileContent = await readFileContent(file);
     logThinking('✅ 文件读取成功，共 ' + fileContent.length + ' 字符', 'step');
 
-    // Get AI config
     const provider = document.getElementById('aiProvider').value;
     const apiKey = document.getElementById('aiApiKey').value.trim();
     if (!apiKey) {
@@ -815,47 +1028,66 @@ async function handleNoteFileUpload(event) {
       return;
     }
 
-    // Create a temporary note to show processing state
+    // Create temp note
     const tempId = 'processing_' + Date.now().toString(36);
     const notes = getNotes();
-    notes.unshift({ id: tempId, title: '分析中: ' + file.name, content: 'AI 正在分析文件内容...', createdAt: new Date().toISOString() });
+    notes.unshift({ id: tempId, title: '分析中: ' + file.name, content: '<p>AI 正在分析文件内容...</p>', createdAt: new Date().toISOString() });
     currentNoteId = tempId;
     saveNotes(notes);
     renderNoteList();
-    document.getElementById('noteTitle').style.display = 'block';
+    showNoteEditor();
     document.getElementById('noteTitle').value = '分析中: ' + file.name;
-    document.getElementById('noteContent').style.display = 'block';
-    document.getElementById('noteContent').value = 'AI 正在分析文件内容...';
-    document.getElementById('noteActions').style.display = 'flex';
-    document.getElementById('noteEmpty').style.display = 'none';
+    document.getElementById('noteContentEdit').innerHTML = '<p>AI 正在分析文件内容...</p>';
+    switchNoteMode('view');
 
-    // Build prompt for AI
-    const analysisPrompt = '你是一位资深的保险产品经理。请仔细阅读以下文件内容，生成一份结构化的保险学习笔记。\n\n要求：\n1. 标题用 "# 笔记标题" 格式，根据文件内容提炼合适的标题\n2. 用 ## 分段，清晰整理要点\n3. 关键术语加粗\n4. 如有数据或案例，单独列出\n5. 在末尾添加 "---\n自动生成于 ' + new Date().toLocaleDateString() + ' | 来源: ' + file.name + '"\n\n文件内容如下：\n\n' + fileContent.substring(0, 15000);
+    // Build prompt — request HTML formatted output
+    const analysisPrompt = `你是一位资深的保险产品经理。请仔细阅读以下文件内容，生成一份可视化、结构化的保险学习笔记。
+
+要求（必须输出完整的 HTML 格式笔记）：
+1. 用 <h1>笔记标题</h1> 作为标题
+2. 用 <h2> 标签分段，每个章节清晰
+3. 关键术语用 <strong> 加粗，或使用 <span class="note-highlight"> 高亮
+4. 重要信息用 <div class="note-card"> 卡片展示（背景自带颜色），可选用 green/orange/red 类名
+5. 数据对比用 <table> 表格呈现
+6. 术语标签用 <span class="note-tag purple">术语名</span>（可选 purple/green/blue）
+7. 引用内容用 <blockquote> 包裹
+8. 无序列表用 <ul><li>，有序用 <ol><li>
+9. 在末尾添加 <div class="note-meta">自动生成于 ${new Date().toLocaleDateString()} | 来源: ${file.name}</div>
+
+文件内容如下：
+
+${fileContent.substring(0, 15000)}`;
 
     logThinking('🤖 调用 AI 分析文件内容...', 'step');
 
     const messages = [{ role: 'user', content: analysisPrompt }];
-    const systemPrompt = '你是一位资深的保险产品经理专家。你擅长从文档中提取关键信息并整理成结构化的学习笔记。';
+    const systemPrompt = '你是一位资深的保险产品经理专家。你擅长从文档中提取关键信息并整理成结构化的可视化HTML笔记。请直接输出HTML代码（从<h1>开始），不要用markdown代码块包裹。';
     const response = await callAIWithProvider(provider, apiKey, messages, systemPrompt);
 
-    logThinking('✅ AI 分析完成，生成笔记 (' + response.length + ' 字)', 'done');
+    // Clean response: strip markdown code fences if present
+    var cleanHtml = response;
+    var fenceMatch = cleanHtml.match(/```html?\s*([\s\S]*?)```/i);
+    if (fenceMatch) cleanHtml = fenceMatch[1];
+    else if (cleanHtml.startsWith('```')) cleanHtml = cleanHtml.replace(/^```\w*\n?/, '').replace(/\n?```$/, '');
 
-    // Update the temp note with AI response
+    logThinking('✅ AI 分析完成 (' + cleanHtml.length + ' 字符)', 'done');
+
+    // Update the temp note
     const updatedNotes = getNotes();
     const idx = updatedNotes.findIndex(function(n) { return n.id === tempId; });
     if (idx !== -1) {
-      updatedNotes[idx].content = response;
-      // Extract title from first # heading
-      const titleMatch = response.match(/^#\s+(.+)/m);
+      updatedNotes[idx].content = cleanHtml;
+      const titleMatch = cleanHtml.match(/<h1[^>]*>([^<]*)<\/h1>/i);
       updatedNotes[idx].title = titleMatch ? titleMatch[1] : ('笔记: ' + file.name);
       updatedNotes[idx].updatedAt = new Date().toISOString();
       saveNotes(updatedNotes);
       renderNoteList();
       document.getElementById('noteTitle').value = updatedNotes[idx].title;
-      document.getElementById('noteContent').value = updatedNotes[idx].content;
+      document.getElementById('noteContentView').innerHTML = cleanHtml;
+      switchNoteMode('view');
     }
 
-    logThinking('📝 笔记已保存到笔记本', 'done');
+    logThinking('📝 可视化笔记已保存', 'done');
   } catch (err) {
     logThinking('❌ 文件处理失败: ' + err.message, 'error');
     alert('文件处理失败: ' + err.message);
@@ -882,7 +1114,16 @@ function resetUploadButton() {
   }
 }
 
-function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function escapeHtml(s) {
+  if (!s) return '';
+  const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+}
+function stripHtml(html) {
+  if (!html) return '';
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || '';
+}
 
 // ======================== AI CHAT ========================
 const CHAT_STORAGE = 'insurance_chat_history';
@@ -1404,7 +1645,6 @@ function saveToNotebook(btn) {
   const msg = chatMessages[msgIdx];
   if (!msg || msg.role !== 'assistant') return;
 
-  // Get the user's question as title (find previous user message)
   let title = '';
   for (let i = msgIdx - 1; i >= 0; i--) {
     if (chatMessages[i].role === 'user') {
@@ -1414,18 +1654,29 @@ function saveToNotebook(btn) {
   }
   if (!title) title = 'AI 回复';
 
+  // Convert markdown-ish content to HTML for visual notebook
+  var htmlContent = msg.content
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n- (.+)/g, '\n<ul><li>$1</li></ul>')
+    .replace(/\n\d+\. (.+)/g, '\n<ol><li>$1</li></ol>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+
   const id = Date.now().toString(36);
   const notes = getNotes();
   notes.unshift({
     id,
     title,
-    content: `【问题】${title}\n\n【AI 回复】\n${msg.content}`,
+    content: htmlContent,
     createdAt: new Date().toISOString()
   });
   saveNotes(notes);
   renderNoteList();
 
-  // Flash feedback on the specific button
   btn.textContent = '已保存!';
   btn.style.color = '#4caf50';
   btn.style.borderColor = '#4caf50';
